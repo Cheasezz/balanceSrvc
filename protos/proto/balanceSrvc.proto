@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package balance;
+
+option go_package = "github.com/Cheasezz/balanceSrvc/protos/gen/balanceSrvc/;blnc";
+option optimize_for = SPEED;
+
+service Balance {
+  rpc SystemTransaction (SystemTransactionRequest) returns (SystemTransactionResponse);
+  rpc UserTransaction (UserTransactionRequest) returns (UserTransactionResponse);
+  rpc UserBalance (BalanceRequest) returns (BalanceResponse);
+}
+
+message SystemTransactionRequest {
+  string user_id = 1;
+  string transaction_type = 2;
+  int64 amount = 3;
+}
+
+message SystemTransactionResponse {}
+
+message UserTransactionRequest {
+  string sender_id = 1;
+  string resipient_id = 2;
+  string transaction_type = 3;
+  int64 amount = 4;
+}
+
+message UserTransactionResponse {}
+
+message BalanceRequest {
+  string user_id = 1;
+}
+
+message BalanceResponse {
+  int64 balance = 1;
+}
