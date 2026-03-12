@@ -19,9 +19,7 @@ func main() {
 
 	application := app.New(log, cfg.GRPC.Port, cfg.PG.URL)
 
-	go func() {
-		application.GRPCSrv.MustRun()
-	}()
+	go application.GRPCSrv.MustRun()
 
 	// Graceful shutdown
 
