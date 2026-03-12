@@ -5,6 +5,7 @@ import (
 	"net"
 
 	grpcHndlrs "github.com/Cheasezz/balanceSrvc/internal/grpc"
+	"github.com/Cheasezz/balanceSrvc/internal/service"
 	"github.com/Cheasezz/balanceSrvc/pkg/logger"
 	"google.golang.org/grpc"
 )
@@ -15,10 +16,10 @@ type App struct {
 	port       int
 }
 
-func New(l logger.Logger, p int) *App {
+func New(l logger.Logger, p int, s *service.Service) *App {
 	gRPCServer := grpc.NewServer()
 
-	grpcHndlrs.Register(gRPCServer)
+	grpcHndlrs.Register(gRPCServer, s)
 
 	return &App{
 		log:        l,

@@ -9,6 +9,7 @@ require (
 	github.com/go-task/slim-sprig v0.0.0-20230315185526-52ccab3ef572 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/google/pprof v0.0.0-20230705174524-200ffdc848b8 // indirect
+	github.com/google/uuid v1.6.0 // indirect
 	github.com/ilyakaznacheev/cleanenv v1.5.0 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/onsi/ginkgo/v2 v2.11.0 // indirect
