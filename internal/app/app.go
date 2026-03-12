@@ -1,16 +1,15 @@
 package app
 
 import (
-	"log/slog"
-
 	grpcapp "github.com/Cheasezz/balanceSrvc/internal/app/grpc"
+	"github.com/Cheasezz/balanceSrvc/pkg/logger"
 )
 
 type App struct {
 	GRPCSrv *grpcapp.App
 }
 
-func New(l *slog.Logger, p int, pbUrl string) *App {
+func New(l logger.Logger, p int, pbUrl string) *App {
 	grpcApp := grpcapp.New(l, p)
 
 	return &App{GRPCSrv: grpcApp}

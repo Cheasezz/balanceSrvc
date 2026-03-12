@@ -1,24 +1,19 @@
 package main
 
 import (
-	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/Cheasezz/balanceSrvc/internal/app"
 	"github.com/Cheasezz/balanceSrvc/internal/config"
-)
-
-const (
-	envLocal = "local"
-	envProd  = "prod"
+	"github.com/Cheasezz/balanceSrvc/pkg/logger"
 )
 
 func main() {
 	cfg := config.MustLoad()
 
-	log := setupLogger(cfg.Env)
+	log := logger.New(cfg.Env)
 
 	log.Info("starting application")
 
@@ -37,21 +32,4 @@ func main() {
 
 	application.GRPCSrv.Stop()
 	log.Info("Gracefully stopped")
-}
-
-func setupLogger(env string) *slog.Logger {
-	var log *slog.Logger
-
-	switch env {
-	case envLocal:
-		log = slog.New(
-			slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}),
-		)
-	case envProd:
-		log = slog.New(
-			slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelInfo}),
-		)
-	}
-
-	return log
 }

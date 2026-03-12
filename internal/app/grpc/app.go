@@ -2,20 +2,20 @@ package grpcapp
 
 import (
 	"fmt"
-	"log/slog"
 	"net"
 
 	grpcHndlrs "github.com/Cheasezz/balanceSrvc/internal/grpc"
+	"github.com/Cheasezz/balanceSrvc/pkg/logger"
 	"google.golang.org/grpc"
 )
 
 type App struct {
-	log        *slog.Logger
+	log        logger.Logger
 	gRPCServer *grpc.Server
 	port       int
 }
 
-func New(l *slog.Logger, p int) *App {
+func New(l logger.Logger, p int) *App {
 	gRPCServer := grpc.NewServer()
 
 	grpcHndlrs.Register(gRPCServer)
@@ -35,14 +35,14 @@ func (a *App) MustRun() {
 
 func (a *App) Run() error {
 	const op = "grpcapp.Run"
-	log := a.log.With(slog.String("op", op))
+	log := a.log.With("op", op)
 
 	l, err := net.Listen("tcp", fmt.Sprintf(":%d", a.port))
 	if err != nil {
 		return fmt.Errorf("%s: %w", op, err)
 	}
 
-	log.Info("gRPC server is running", slog.String("addr", l.Addr().String()))
+	log.Info("gRPC server is running", "addr", l.Addr().String())
 
 	if err = a.gRPCServer.Serve(l); err != nil {
 		return fmt.Errorf("%s: %w", op, err)
@@ -53,8 +53,8 @@ func (a *App) Run() error {
 
 func (a *App) Stop() {
 	const op = "grpcapp.Stop"
-	a.log.With(slog.String("op", op)).
-		Info("stopping gRPC server", slog.Int("port", a.port))
+	a.log.With("op", op).
+		Info("stopping gRPC server", "port", a.port)
 
 	a.gRPCServer.GracefulStop()
 }
