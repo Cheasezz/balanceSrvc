@@ -53,9 +53,5 @@ func (a *App) Run() error {
 }
 
 func (a *App) Stop() {
-	const op = "grpcapp.Stop"
-	a.log.With("op", op).
-		Info("stopping gRPC server", "port", a.port)
-
 	a.gRPCServer.GracefulStop()
 }

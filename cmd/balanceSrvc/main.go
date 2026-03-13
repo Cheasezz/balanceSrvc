@@ -18,6 +18,7 @@ func main() {
 	log.Info("starting application")
 
 	application := app.New(log, cfg.GRPC.Port, cfg.PG.URL)
+	defer application.Close()
 
 	go application.GRPCSrv.MustRun()
 
@@ -28,6 +29,5 @@ func main() {
 
 	<-stop
 
-	application.GRPCSrv.Stop()
 	log.Info("Gracefully stopped")
 }
