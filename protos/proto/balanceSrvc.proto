@@ -6,27 +6,39 @@ option go_package = "github.com/Cheasezz/balanceSrvc/protos/gen/balanceSrvc/;bln
 option optimize_for = SPEED;
 
 service Balance {
-  rpc SystemTransaction (SystemTransactionRequest) returns (SystemTransactionResponse);
-  rpc UserTransaction (UserTransactionRequest) returns (UserTransactionResponse);
+  rpc SystemTransaction (SystemTrxRequest) returns (SystemTrxResponse);
+  rpc UserTransaction (UserTrxRequest) returns (UserTrxResponse);
   rpc UserBalance (BalanceRequest) returns (BalanceResponse);
 }
 
-message SystemTransactionRequest {
+enum SystemTrxType {
+  SYSTEM_TRX_TYPE_UNKNOWN = 0;
+  SYSTEM_TRX_TYPE_DEPOSIT = 1;
+  SYSTEM_TRX_TYPE_WITHDRAWAL = 2;
+  SYSTEM_TRX_TYPE_REWARD = 3;
+}
+
+enum UserTrxType {
+  USER_TRX_TYPE_UNKNOWN = 0;
+  USER_TRX_TYPE_TRANSFER = 1;
+}
+
+message SystemTrxRequest {
   string user_id = 1;
-  string transaction_type = 2;
+  SystemTrxType system_trx_type = 2;
   int64 amount = 3;
 }
 
-message SystemTransactionResponse {}
+message SystemTrxResponse {}
 
-message UserTransactionRequest {
+message UserTrxRequest {
   string sender_id = 1;
   string resipient_id = 2;
-  string transaction_type = 3;
+  UserTrxType user_trx_type = 3;
   int64 amount = 4;
 }
 
-message UserTransactionResponse {}
+message UserTrxResponse {}
 
 message BalanceRequest {
   string user_id = 1;

@@ -21,29 +21,127 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type SystemTransactionRequest struct {
-	state           protoimpl.MessageState `protogen:"open.v1"`
-	UserId          string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	TransactionType string                 `protobuf:"bytes,2,opt,name=transaction_type,json=transactionType,proto3" json:"transaction_type,omitempty"`
-	Amount          int64                  `protobuf:"varint,3,opt,name=amount,proto3" json:"amount,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+type SystemTrxType int32
+
+const (
+	SystemTrxType_SYSTEM_TRX_TYPE_UNKNOWN    SystemTrxType = 0
+	SystemTrxType_SYSTEM_TRX_TYPE_DEPOSIT    SystemTrxType = 1
+	SystemTrxType_SYSTEM_TRX_TYPE_WITHDRAWAL SystemTrxType = 2
+	SystemTrxType_SYSTEM_TRX_TYPE_REWARD     SystemTrxType = 3
+)
+
+// Enum value maps for SystemTrxType.
+var (
+	SystemTrxType_name = map[int32]string{
+		0: "SYSTEM_TRX_TYPE_UNKNOWN",
+		1: "SYSTEM_TRX_TYPE_DEPOSIT",
+		2: "SYSTEM_TRX_TYPE_WITHDRAWAL",
+		3: "SYSTEM_TRX_TYPE_REWARD",
+	}
+	SystemTrxType_value = map[string]int32{
+		"SYSTEM_TRX_TYPE_UNKNOWN":    0,
+		"SYSTEM_TRX_TYPE_DEPOSIT":    1,
+		"SYSTEM_TRX_TYPE_WITHDRAWAL": 2,
+		"SYSTEM_TRX_TYPE_REWARD":     3,
+	}
+)
+
+func (x SystemTrxType) Enum() *SystemTrxType {
+	p := new(SystemTrxType)
+	*p = x
+	return p
 }
 
-func (x *SystemTransactionRequest) Reset() {
-	*x = SystemTransactionRequest{}
+func (x SystemTrxType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (SystemTrxType) Descriptor() protoreflect.EnumDescriptor {
+	return file_balanceSrvc_proto_enumTypes[0].Descriptor()
+}
+
+func (SystemTrxType) Type() protoreflect.EnumType {
+	return &file_balanceSrvc_proto_enumTypes[0]
+}
+
+func (x SystemTrxType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use SystemTrxType.Descriptor instead.
+func (SystemTrxType) EnumDescriptor() ([]byte, []int) {
+	return file_balanceSrvc_proto_rawDescGZIP(), []int{0}
+}
+
+type UserTrxType int32
+
+const (
+	UserTrxType_USER_TRX_TYPE_UNKNOWN  UserTrxType = 0
+	UserTrxType_USER_TRX_TYPE_TRANSFER UserTrxType = 1
+)
+
+// Enum value maps for UserTrxType.
+var (
+	UserTrxType_name = map[int32]string{
+		0: "USER_TRX_TYPE_UNKNOWN",
+		1: "USER_TRX_TYPE_TRANSFER",
+	}
+	UserTrxType_value = map[string]int32{
+		"USER_TRX_TYPE_UNKNOWN":  0,
+		"USER_TRX_TYPE_TRANSFER": 1,
+	}
+)
+
+func (x UserTrxType) Enum() *UserTrxType {
+	p := new(UserTrxType)
+	*p = x
+	return p
+}
+
+func (x UserTrxType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (UserTrxType) Descriptor() protoreflect.EnumDescriptor {
+	return file_balanceSrvc_proto_enumTypes[1].Descriptor()
+}
+
+func (UserTrxType) Type() protoreflect.EnumType {
+	return &file_balanceSrvc_proto_enumTypes[1]
+}
+
+func (x UserTrxType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use UserTrxType.Descriptor instead.
+func (UserTrxType) EnumDescriptor() ([]byte, []int) {
+	return file_balanceSrvc_proto_rawDescGZIP(), []int{1}
+}
+
+type SystemTrxRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	SystemTrxType SystemTrxType          `protobuf:"varint,2,opt,name=system_trx_type,json=systemTrxType,proto3,enum=balance.SystemTrxType" json:"system_trx_type,omitempty"`
+	Amount        int64                  `protobuf:"varint,3,opt,name=amount,proto3" json:"amount,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SystemTrxRequest) Reset() {
+	*x = SystemTrxRequest{}
 	mi := &file_balanceSrvc_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *SystemTransactionRequest) String() string {
+func (x *SystemTrxRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*SystemTransactionRequest) ProtoMessage() {}
+func (*SystemTrxRequest) ProtoMessage() {}
 
-func (x *SystemTransactionRequest) ProtoReflect() protoreflect.Message {
+func (x *SystemTrxRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_balanceSrvc_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -55,52 +153,52 @@ func (x *SystemTransactionRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use SystemTransactionRequest.ProtoReflect.Descriptor instead.
-func (*SystemTransactionRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use SystemTrxRequest.ProtoReflect.Descriptor instead.
+func (*SystemTrxRequest) Descriptor() ([]byte, []int) {
 	return file_balanceSrvc_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *SystemTransactionRequest) GetUserId() string {
+func (x *SystemTrxRequest) GetUserId() string {
 	if x != nil {
 		return x.UserId
 	}
 	return ""
 }
 
-func (x *SystemTransactionRequest) GetTransactionType() string {
+func (x *SystemTrxRequest) GetSystemTrxType() SystemTrxType {
 	if x != nil {
-		return x.TransactionType
+		return x.SystemTrxType
 	}
-	return ""
+	return SystemTrxType_SYSTEM_TRX_TYPE_UNKNOWN
 }
 
-func (x *SystemTransactionRequest) GetAmount() int64 {
+func (x *SystemTrxRequest) GetAmount() int64 {
 	if x != nil {
 		return x.Amount
 	}
 	return 0
 }
 
-type SystemTransactionResponse struct {
+type SystemTrxResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *SystemTransactionResponse) Reset() {
-	*x = SystemTransactionResponse{}
+func (x *SystemTrxResponse) Reset() {
+	*x = SystemTrxResponse{}
 	mi := &file_balanceSrvc_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *SystemTransactionResponse) String() string {
+func (x *SystemTrxResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*SystemTransactionResponse) ProtoMessage() {}
+func (*SystemTrxResponse) ProtoMessage() {}
 
-func (x *SystemTransactionResponse) ProtoReflect() protoreflect.Message {
+func (x *SystemTrxResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_balanceSrvc_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -112,35 +210,35 @@ func (x *SystemTransactionResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use SystemTransactionResponse.ProtoReflect.Descriptor instead.
-func (*SystemTransactionResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use SystemTrxResponse.ProtoReflect.Descriptor instead.
+func (*SystemTrxResponse) Descriptor() ([]byte, []int) {
 	return file_balanceSrvc_proto_rawDescGZIP(), []int{1}
 }
 
-type UserTransactionRequest struct {
-	state           protoimpl.MessageState `protogen:"open.v1"`
-	SenderId        string                 `protobuf:"bytes,1,opt,name=sender_id,json=senderId,proto3" json:"sender_id,omitempty"`
-	ResipientId     string                 `protobuf:"bytes,2,opt,name=resipient_id,json=resipientId,proto3" json:"resipient_id,omitempty"`
-	TransactionType string                 `protobuf:"bytes,3,opt,name=transaction_type,json=transactionType,proto3" json:"transaction_type,omitempty"`
-	Amount          int64                  `protobuf:"varint,4,opt,name=amount,proto3" json:"amount,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+type UserTrxRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	SenderId      string                 `protobuf:"bytes,1,opt,name=sender_id,json=senderId,proto3" json:"sender_id,omitempty"`
+	ResipientId   string                 `protobuf:"bytes,2,opt,name=resipient_id,json=resipientId,proto3" json:"resipient_id,omitempty"`
+	UserTrxType   UserTrxType            `protobuf:"varint,3,opt,name=user_trx_type,json=userTrxType,proto3,enum=balance.UserTrxType" json:"user_trx_type,omitempty"`
+	Amount        int64                  `protobuf:"varint,4,opt,name=amount,proto3" json:"amount,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
-func (x *UserTransactionRequest) Reset() {
-	*x = UserTransactionRequest{}
+func (x *UserTrxRequest) Reset() {
+	*x = UserTrxRequest{}
 	mi := &file_balanceSrvc_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *UserTransactionRequest) String() string {
+func (x *UserTrxRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*UserTransactionRequest) ProtoMessage() {}
+func (*UserTrxRequest) ProtoMessage() {}
 
-func (x *UserTransactionRequest) ProtoReflect() protoreflect.Message {
+func (x *UserTrxRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_balanceSrvc_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -152,59 +250,59 @@ func (x *UserTransactionRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use UserTransactionRequest.ProtoReflect.Descriptor instead.
-func (*UserTransactionRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use UserTrxRequest.ProtoReflect.Descriptor instead.
+func (*UserTrxRequest) Descriptor() ([]byte, []int) {
 	return file_balanceSrvc_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *UserTransactionRequest) GetSenderId() string {
+func (x *UserTrxRequest) GetSenderId() string {
 	if x != nil {
 		return x.SenderId
 	}
 	return ""
 }
 
-func (x *UserTransactionRequest) GetResipientId() string {
+func (x *UserTrxRequest) GetResipientId() string {
 	if x != nil {
 		return x.ResipientId
 	}
 	return ""
 }
 
-func (x *UserTransactionRequest) GetTransactionType() string {
+func (x *UserTrxRequest) GetUserTrxType() UserTrxType {
 	if x != nil {
-		return x.TransactionType
+		return x.UserTrxType
 	}
-	return ""
+	return UserTrxType_USER_TRX_TYPE_UNKNOWN
 }
 
-func (x *UserTransactionRequest) GetAmount() int64 {
+func (x *UserTrxRequest) GetAmount() int64 {
 	if x != nil {
 		return x.Amount
 	}
 	return 0
 }
 
-type UserTransactionResponse struct {
+type UserTrxResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *UserTransactionResponse) Reset() {
-	*x = UserTransactionResponse{}
+func (x *UserTrxResponse) Reset() {
+	*x = UserTrxResponse{}
 	mi := &file_balanceSrvc_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *UserTransactionResponse) String() string {
+func (x *UserTrxResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*UserTransactionResponse) ProtoMessage() {}
+func (*UserTrxResponse) ProtoMessage() {}
 
-func (x *UserTransactionResponse) ProtoReflect() protoreflect.Message {
+func (x *UserTrxResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_balanceSrvc_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -216,8 +314,8 @@ func (x *UserTransactionResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use UserTransactionResponse.ProtoReflect.Descriptor instead.
-func (*UserTransactionResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use UserTrxResponse.ProtoReflect.Descriptor instead.
+func (*UserTrxResponse) Descriptor() ([]byte, []int) {
 	return file_balanceSrvc_proto_rawDescGZIP(), []int{3}
 }
 
@@ -313,25 +411,33 @@ var File_balanceSrvc_proto protoreflect.FileDescriptor
 
 const file_balanceSrvc_proto_rawDesc = "" +
 	"\n" +
-	"\x11balanceSrvc.proto\x12\abalance\"v\n" +
-	"\x18SystemTransactionRequest\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\tR\x06userId\x12)\n" +
-	"\x10transaction_type\x18\x02 \x01(\tR\x0ftransactionType\x12\x16\n" +
-	"\x06amount\x18\x03 \x01(\x03R\x06amount\"\x1b\n" +
-	"\x19SystemTransactionResponse\"\x9b\x01\n" +
-	"\x16UserTransactionRequest\x12\x1b\n" +
+	"\x11balanceSrvc.proto\x12\abalance\"\x83\x01\n" +
+	"\x10SystemTrxRequest\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\x12>\n" +
+	"\x0fsystem_trx_type\x18\x02 \x01(\x0e2\x16.balance.SystemTrxTypeR\rsystemTrxType\x12\x16\n" +
+	"\x06amount\x18\x03 \x01(\x03R\x06amount\"\x13\n" +
+	"\x11SystemTrxResponse\"\xa2\x01\n" +
+	"\x0eUserTrxRequest\x12\x1b\n" +
 	"\tsender_id\x18\x01 \x01(\tR\bsenderId\x12!\n" +
-	"\fresipient_id\x18\x02 \x01(\tR\vresipientId\x12)\n" +
-	"\x10transaction_type\x18\x03 \x01(\tR\x0ftransactionType\x12\x16\n" +
-	"\x06amount\x18\x04 \x01(\x03R\x06amount\"\x19\n" +
-	"\x17UserTransactionResponse\")\n" +
+	"\fresipient_id\x18\x02 \x01(\tR\vresipientId\x128\n" +
+	"\ruser_trx_type\x18\x03 \x01(\x0e2\x14.balance.UserTrxTypeR\vuserTrxType\x12\x16\n" +
+	"\x06amount\x18\x04 \x01(\x03R\x06amount\"\x11\n" +
+	"\x0fUserTrxResponse\")\n" +
 	"\x0eBalanceRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\"+\n" +
 	"\x0fBalanceResponse\x12\x18\n" +
-	"\abalance\x18\x01 \x01(\x03R\abalance2\xfd\x01\n" +
-	"\aBalance\x12Z\n" +
-	"\x11SystemTransaction\x12!.balance.SystemTransactionRequest\x1a\".balance.SystemTransactionResponse\x12T\n" +
-	"\x0fUserTransaction\x12\x1f.balance.UserTransactionRequest\x1a .balance.UserTransactionResponse\x12@\n" +
+	"\abalance\x18\x01 \x01(\x03R\abalance*\x85\x01\n" +
+	"\rSystemTrxType\x12\x1b\n" +
+	"\x17SYSTEM_TRX_TYPE_UNKNOWN\x10\x00\x12\x1b\n" +
+	"\x17SYSTEM_TRX_TYPE_DEPOSIT\x10\x01\x12\x1e\n" +
+	"\x1aSYSTEM_TRX_TYPE_WITHDRAWAL\x10\x02\x12\x1a\n" +
+	"\x16SYSTEM_TRX_TYPE_REWARD\x10\x03*D\n" +
+	"\vUserTrxType\x12\x19\n" +
+	"\x15USER_TRX_TYPE_UNKNOWN\x10\x00\x12\x1a\n" +
+	"\x16USER_TRX_TYPE_TRANSFER\x10\x012\xdd\x01\n" +
+	"\aBalance\x12J\n" +
+	"\x11SystemTransaction\x12\x19.balance.SystemTrxRequest\x1a\x1a.balance.SystemTrxResponse\x12D\n" +
+	"\x0fUserTransaction\x12\x17.balance.UserTrxRequest\x1a\x18.balance.UserTrxResponse\x12@\n" +
 	"\vUserBalance\x12\x17.balance.BalanceRequest\x1a\x18.balance.BalanceResponseB@H\x01Z<github.com/Cheasezz/balanceSrvc/protos/gen/balanceSrvc/;blncb\x06proto3"
 
 var (
@@ -346,27 +452,32 @@ func file_balanceSrvc_proto_rawDescGZIP() []byte {
 	return file_balanceSrvc_proto_rawDescData
 }
 
+var file_balanceSrvc_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
 var file_balanceSrvc_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_balanceSrvc_proto_goTypes = []any{
-	(*SystemTransactionRequest)(nil),  // 0: balance.SystemTransactionRequest
-	(*SystemTransactionResponse)(nil), // 1: balance.SystemTransactionResponse
-	(*UserTransactionRequest)(nil),    // 2: balance.UserTransactionRequest
-	(*UserTransactionResponse)(nil),   // 3: balance.UserTransactionResponse
-	(*BalanceRequest)(nil),            // 4: balance.BalanceRequest
-	(*BalanceResponse)(nil),           // 5: balance.BalanceResponse
+	(SystemTrxType)(0),        // 0: balance.SystemTrxType
+	(UserTrxType)(0),          // 1: balance.UserTrxType
+	(*SystemTrxRequest)(nil),  // 2: balance.SystemTrxRequest
+	(*SystemTrxResponse)(nil), // 3: balance.SystemTrxResponse
+	(*UserTrxRequest)(nil),    // 4: balance.UserTrxRequest
+	(*UserTrxResponse)(nil),   // 5: balance.UserTrxResponse
+	(*BalanceRequest)(nil),    // 6: balance.BalanceRequest
+	(*BalanceResponse)(nil),   // 7: balance.BalanceResponse
 }
 var file_balanceSrvc_proto_depIdxs = []int32{
-	0, // 0: balance.Balance.SystemTransaction:input_type -> balance.SystemTransactionRequest
-	2, // 1: balance.Balance.UserTransaction:input_type -> balance.UserTransactionRequest
-	4, // 2: balance.Balance.UserBalance:input_type -> balance.BalanceRequest
-	1, // 3: balance.Balance.SystemTransaction:output_type -> balance.SystemTransactionResponse
-	3, // 4: balance.Balance.UserTransaction:output_type -> balance.UserTransactionResponse
-	5, // 5: balance.Balance.UserBalance:output_type -> balance.BalanceResponse
-	3, // [3:6] is the sub-list for method output_type
-	0, // [0:3] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	0, // 0: balance.SystemTrxRequest.system_trx_type:type_name -> balance.SystemTrxType
+	1, // 1: balance.UserTrxRequest.user_trx_type:type_name -> balance.UserTrxType
+	2, // 2: balance.Balance.SystemTransaction:input_type -> balance.SystemTrxRequest
+	4, // 3: balance.Balance.UserTransaction:input_type -> balance.UserTrxRequest
+	6, // 4: balance.Balance.UserBalance:input_type -> balance.BalanceRequest
+	3, // 5: balance.Balance.SystemTransaction:output_type -> balance.SystemTrxResponse
+	5, // 6: balance.Balance.UserTransaction:output_type -> balance.UserTrxResponse
+	7, // 7: balance.Balance.UserBalance:output_type -> balance.BalanceResponse
+	5, // [5:8] is the sub-list for method output_type
+	2, // [2:5] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_balanceSrvc_proto_init() }
@@ -379,13 +490,14 @@ func file_balanceSrvc_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_balanceSrvc_proto_rawDesc), len(file_balanceSrvc_proto_rawDesc)),
-			NumEnums:      0,
+			NumEnums:      2,
 			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
 		GoTypes:           file_balanceSrvc_proto_goTypes,
 		DependencyIndexes: file_balanceSrvc_proto_depIdxs,
+		EnumInfos:         file_balanceSrvc_proto_enumTypes,
 		MessageInfos:      file_balanceSrvc_proto_msgTypes,
 	}.Build()
 	File_balanceSrvc_proto = out.File

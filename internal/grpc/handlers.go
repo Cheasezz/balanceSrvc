@@ -29,8 +29,8 @@ func Register(gRPC *grpc.Server, s *service.Service) {
 
 func (s *serverAPI) SystemTransaction(
 	ctx context.Context,
-	req *blnc.SystemTransactionRequest,
-) (*blnc.SystemTransactionResponse, error) {
+	req *blnc.SystemTrxRequest,
+) (*blnc.SystemTrxResponse, error) {
 
 	id, err := uuid.Parse(req.GetUserId())
 	if err != nil {
@@ -45,7 +45,7 @@ func (s *serverAPI) SystemTransaction(
 
 	trx := &core.SystemTransaction{
 		UserId:          id,
-		TransactionType: req.GetTransactionType(),
+		TransactionType: req.GetSystemTrxType().String(),
 		Amount:          req.GetAmount(),
 	}
 
@@ -54,13 +54,13 @@ func (s *serverAPI) SystemTransaction(
 		return nil, status.Error(codes.Internal, errInternalServer)
 	}
 
-	return &blnc.SystemTransactionResponse{}, nil
+	return &blnc.SystemTrxResponse{}, nil
 }
 
 func (s *serverAPI) UserTransaction(
 	ctx context.Context,
-	req *blnc.UserTransactionRequest,
-) (*blnc.UserTransactionResponse, error) {
+	req *blnc.UserTrxRequest,
+) (*blnc.UserTrxResponse, error) {
 	panic("Implement me pls")
 	//...
 }

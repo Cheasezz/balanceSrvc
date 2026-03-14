@@ -28,8 +28,8 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type BalanceClient interface {
-	SystemTransaction(ctx context.Context, in *SystemTransactionRequest, opts ...grpc.CallOption) (*SystemTransactionResponse, error)
-	UserTransaction(ctx context.Context, in *UserTransactionRequest, opts ...grpc.CallOption) (*UserTransactionResponse, error)
+	SystemTransaction(ctx context.Context, in *SystemTrxRequest, opts ...grpc.CallOption) (*SystemTrxResponse, error)
+	UserTransaction(ctx context.Context, in *UserTrxRequest, opts ...grpc.CallOption) (*UserTrxResponse, error)
 	UserBalance(ctx context.Context, in *BalanceRequest, opts ...grpc.CallOption) (*BalanceResponse, error)
 }
 
@@ -41,9 +41,9 @@ func NewBalanceClient(cc grpc.ClientConnInterface) BalanceClient {
 	return &balanceClient{cc}
 }
 
-func (c *balanceClient) SystemTransaction(ctx context.Context, in *SystemTransactionRequest, opts ...grpc.CallOption) (*SystemTransactionResponse, error) {
+func (c *balanceClient) SystemTransaction(ctx context.Context, in *SystemTrxRequest, opts ...grpc.CallOption) (*SystemTrxResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(SystemTransactionResponse)
+	out := new(SystemTrxResponse)
 	err := c.cc.Invoke(ctx, Balance_SystemTransaction_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -51,9 +51,9 @@ func (c *balanceClient) SystemTransaction(ctx context.Context, in *SystemTransac
 	return out, nil
 }
 
-func (c *balanceClient) UserTransaction(ctx context.Context, in *UserTransactionRequest, opts ...grpc.CallOption) (*UserTransactionResponse, error) {
+func (c *balanceClient) UserTransaction(ctx context.Context, in *UserTrxRequest, opts ...grpc.CallOption) (*UserTrxResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(UserTransactionResponse)
+	out := new(UserTrxResponse)
 	err := c.cc.Invoke(ctx, Balance_UserTransaction_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -75,8 +75,8 @@ func (c *balanceClient) UserBalance(ctx context.Context, in *BalanceRequest, opt
 // All implementations must embed UnimplementedBalanceServer
 // for forward compatibility.
 type BalanceServer interface {
-	SystemTransaction(context.Context, *SystemTransactionRequest) (*SystemTransactionResponse, error)
-	UserTransaction(context.Context, *UserTransactionRequest) (*UserTransactionResponse, error)
+	SystemTransaction(context.Context, *SystemTrxRequest) (*SystemTrxResponse, error)
+	UserTransaction(context.Context, *UserTrxRequest) (*UserTrxResponse, error)
 	UserBalance(context.Context, *BalanceRequest) (*BalanceResponse, error)
 	mustEmbedUnimplementedBalanceServer()
 }
@@ -88,10 +88,10 @@ type BalanceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedBalanceServer struct{}
 
-func (UnimplementedBalanceServer) SystemTransaction(context.Context, *SystemTransactionRequest) (*SystemTransactionResponse, error) {
+func (UnimplementedBalanceServer) SystemTransaction(context.Context, *SystemTrxRequest) (*SystemTrxResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method SystemTransaction not implemented")
 }
-func (UnimplementedBalanceServer) UserTransaction(context.Context, *UserTransactionRequest) (*UserTransactionResponse, error) {
+func (UnimplementedBalanceServer) UserTransaction(context.Context, *UserTrxRequest) (*UserTrxResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method UserTransaction not implemented")
 }
 func (UnimplementedBalanceServer) UserBalance(context.Context, *BalanceRequest) (*BalanceResponse, error) {
@@ -119,7 +119,7 @@ func RegisterBalanceServer(s grpc.ServiceRegistrar, srv BalanceServer) {
 }
 
 func _Balance_SystemTransaction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SystemTransactionRequest)
+	in := new(SystemTrxRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -131,13 +131,13 @@ func _Balance_SystemTransaction_Handler(srv interface{}, ctx context.Context, de
 		FullMethod: Balance_SystemTransaction_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BalanceServer).SystemTransaction(ctx, req.(*SystemTransactionRequest))
+		return srv.(BalanceServer).SystemTransaction(ctx, req.(*SystemTrxRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Balance_UserTransaction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UserTransactionRequest)
+	in := new(UserTrxRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -149,7 +149,7 @@ func _Balance_UserTransaction_Handler(srv interface{}, ctx context.Context, dec 
 		FullMethod: Balance_UserTransaction_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BalanceServer).UserTransaction(ctx, req.(*UserTransactionRequest))
+		return srv.(BalanceServer).UserTransaction(ctx, req.(*UserTrxRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
