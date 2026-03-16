@@ -3,8 +3,8 @@ package grpcHndlrs
 import (
 	"context"
 
-	"github.com/Cheasezz/balanceSrvc/internal/core"
 	"github.com/Cheasezz/balanceSrvc/internal/service"
+	"github.com/Cheasezz/balanceSrvc/pkg/logger"
 	blnc "github.com/Cheasezz/balanceSrvc/protos/gen"
 	"github.com/google/uuid"
 	"google.golang.org/grpc"
@@ -21,10 +21,11 @@ const (
 type serverAPI struct {
 	blnc.UnimplementedBalanceServer
 	srvc *service.Service
+	l    logger.Logger
 }
 
-func Register(gRPC *grpc.Server, s *service.Service) {
-	blnc.RegisterBalanceServer(gRPC, &serverAPI{srvc: s})
+func Register(gRPC *grpc.Server, l logger.Logger, s *service.Service) {
+	blnc.RegisterBalanceServer(gRPC, &serverAPI{srvc: s, l: l})
 }
 
 func (s *serverAPI) SystemTransaction(
@@ -32,25 +33,21 @@ func (s *serverAPI) SystemTransaction(
 	req *blnc.SystemTrxRequest,
 ) (*blnc.SystemTrxResponse, error) {
 
+	const op = "grpcHndlrs.SystemTransaction"
+	log := s.l.With("op", op)
+
 	id, err := uuid.Parse(req.GetUserId())
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, errInvalidUuid)
 	}
 
-	// slices.Contains()
-
 	if req.GetAmount() == 0 {
 		return nil, status.Error(codes.InvalidArgument, errInvalidAmount)
 	}
 
-	trx := &core.SystemTransaction{
-		UserId:          id,
-		TransactionType: req.GetSystemTrxType().String(),
-		Amount:          req.GetAmount(),
-	}
-
-	err = s.srvc.System.Transaction(ctx, trx)
+	err = s.srvc.System.Transaction(ctx, id, req.GetAmount(), req.SystemTrxType)
 	if err != nil {
+		log.Error(err.Error())
 		return nil, status.Error(codes.Internal, errInternalServer)
 	}
 

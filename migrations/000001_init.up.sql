@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS transaction_types (
 INSERT INTO transaction_types (code, name, category) VALUES 
   ('deposit', 'Deposit', 'system'),
   ('withdrawal', 'Withdrawal', 'system'),
-  ('reward', 'Rewars', 'system'),
+  ('reward', 'Reward', 'system'),
   ('transfer', 'User transfer', 'user')
 ON CONFLICT (code) DO NOTHING;
 

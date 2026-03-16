@@ -19,7 +19,7 @@ type App struct {
 func New(l logger.Logger, p int, s *service.Service) *App {
 	gRPCServer := grpc.NewServer()
 
-	grpcHndlrs.Register(gRPCServer, s)
+	grpcHndlrs.Register(gRPCServer, l, s)
 
 	return &App{
 		log:        l,

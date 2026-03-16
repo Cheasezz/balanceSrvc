@@ -15,6 +15,6 @@ func New(db *pgx5.Pgx) *repo {
 	return &repo{db}
 }
 
-func (r *repo) Transaction(ctx context.Context, req *core.SystemTransaction) error {
+func (r *repo) Transaction(ctx context.Context, req *core.Transaction) error {
 	return nil
 }
