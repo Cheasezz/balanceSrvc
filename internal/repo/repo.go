@@ -4,13 +4,11 @@ import (
 	"context"
 
 	"github.com/Cheasezz/balanceSrvc/internal/core"
-	systemrepo "github.com/Cheasezz/balanceSrvc/internal/repo/system"
-	trxrepo "github.com/Cheasezz/balanceSrvc/internal/repo/transaction"
 	"github.com/Cheasezz/balanceSrvc/pkg/pgx5"
 )
 
 type System interface {
-	TransactionTo(c context.Context, req *core.Transaction) error
+	TransactionTo(c context.Context, trx *core.Transaction) error
 }
 
 type Transaction interface {
@@ -22,9 +20,14 @@ type Repo struct {
 	Trx    Transaction
 }
 
+const (
+	userTable = "users"
+	trxTable  = "transaction_types"
+)
+
 func New(db *pgx5.Pgx) *Repo {
 	return &Repo{
-		System: systemrepo.New(db),
-		Trx:    trxrepo.New(db),
+		System: newSystemRepo(db),
+		Trx:    newTrxRepo(db),
 	}
 }

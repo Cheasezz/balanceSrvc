@@ -1,4 +1,4 @@
-package trxrepo
+package repo
 
 import (
 	"context"
@@ -8,17 +8,15 @@ import (
 	"github.com/Cheasezz/balanceSrvc/pkg/pgx5"
 )
 
-type repo struct {
+type trxRepo struct {
 	db *pgx5.Pgx
 }
 
-const trxTable = "transaction_types"
-
-func New(db *pgx5.Pgx) *repo {
-	return &repo{db}
+func newTrxRepo(db *pgx5.Pgx) *trxRepo {
+	return &trxRepo{db}
 }
 
-func (r *repo) GetAllTypesInfo(ctx context.Context) (map[string]*core.TrxType, error) {
+func (r *trxRepo) GetAllTypesInfo(ctx context.Context) (map[string]*core.TrxType, error) {
 	const op = "trxrepo.GetAllTypesInfo"
 
 	query := fmt.Sprintf("SELECT * from %s", trxTable)
