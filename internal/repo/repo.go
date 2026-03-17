@@ -10,7 +10,7 @@ import (
 )
 
 type System interface {
-	Transaction(c context.Context, req *core.Transaction) error
+	TransactionTo(c context.Context, req *core.Transaction) error
 }
 
 type Transaction interface {

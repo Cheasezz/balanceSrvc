@@ -19,16 +19,18 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Balance_SystemTransaction_FullMethodName = "/balance.Balance/SystemTransaction"
-	Balance_UserTransaction_FullMethodName   = "/balance.Balance/UserTransaction"
-	Balance_UserBalance_FullMethodName       = "/balance.Balance/UserBalance"
+	Balance_SystemTransactionTo_FullMethodName   = "/balance.Balance/SystemTransactionTo"
+	Balance_SystemTransactionFrom_FullMethodName = "/balance.Balance/SystemTransactionFrom"
+	Balance_UserTransaction_FullMethodName       = "/balance.Balance/UserTransaction"
+	Balance_UserBalance_FullMethodName           = "/balance.Balance/UserBalance"
 )
 
 // BalanceClient is the client API for Balance service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type BalanceClient interface {
-	SystemTransaction(ctx context.Context, in *SystemTrxRequest, opts ...grpc.CallOption) (*SystemTrxResponse, error)
+	SystemTransactionTo(ctx context.Context, in *SystemTrxToRequest, opts ...grpc.CallOption) (*SystemTrxResponse, error)
+	SystemTransactionFrom(ctx context.Context, in *SystemTrxFromRequest, opts ...grpc.CallOption) (*SystemTrxResponse, error)
 	UserTransaction(ctx context.Context, in *UserTrxRequest, opts ...grpc.CallOption) (*UserTrxResponse, error)
 	UserBalance(ctx context.Context, in *BalanceRequest, opts ...grpc.CallOption) (*BalanceResponse, error)
 }
@@ -41,10 +43,20 @@ func NewBalanceClient(cc grpc.ClientConnInterface) BalanceClient {
 	return &balanceClient{cc}
 }
 
-func (c *balanceClient) SystemTransaction(ctx context.Context, in *SystemTrxRequest, opts ...grpc.CallOption) (*SystemTrxResponse, error) {
+func (c *balanceClient) SystemTransactionTo(ctx context.Context, in *SystemTrxToRequest, opts ...grpc.CallOption) (*SystemTrxResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(SystemTrxResponse)
-	err := c.cc.Invoke(ctx, Balance_SystemTransaction_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, Balance_SystemTransactionTo_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *balanceClient) SystemTransactionFrom(ctx context.Context, in *SystemTrxFromRequest, opts ...grpc.CallOption) (*SystemTrxResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SystemTrxResponse)
+	err := c.cc.Invoke(ctx, Balance_SystemTransactionFrom_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +87,8 @@ func (c *balanceClient) UserBalance(ctx context.Context, in *BalanceRequest, opt
 // All implementations must embed UnimplementedBalanceServer
 // for forward compatibility.
 type BalanceServer interface {
-	SystemTransaction(context.Context, *SystemTrxRequest) (*SystemTrxResponse, error)
+	SystemTransactionTo(context.Context, *SystemTrxToRequest) (*SystemTrxResponse, error)
+	SystemTransactionFrom(context.Context, *SystemTrxFromRequest) (*SystemTrxResponse, error)
 	UserTransaction(context.Context, *UserTrxRequest) (*UserTrxResponse, error)
 	UserBalance(context.Context, *BalanceRequest) (*BalanceResponse, error)
 	mustEmbedUnimplementedBalanceServer()
@@ -88,8 +101,11 @@ type BalanceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedBalanceServer struct{}
 
-func (UnimplementedBalanceServer) SystemTransaction(context.Context, *SystemTrxRequest) (*SystemTrxResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method SystemTransaction not implemented")
+func (UnimplementedBalanceServer) SystemTransactionTo(context.Context, *SystemTrxToRequest) (*SystemTrxResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method SystemTransactionTo not implemented")
+}
+func (UnimplementedBalanceServer) SystemTransactionFrom(context.Context, *SystemTrxFromRequest) (*SystemTrxResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method SystemTransactionFrom not implemented")
 }
 func (UnimplementedBalanceServer) UserTransaction(context.Context, *UserTrxRequest) (*UserTrxResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method UserTransaction not implemented")
@@ -118,20 +134,38 @@ func RegisterBalanceServer(s grpc.ServiceRegistrar, srv BalanceServer) {
 	s.RegisterService(&Balance_ServiceDesc, srv)
 }
 
-func _Balance_SystemTransaction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SystemTrxRequest)
+func _Balance_SystemTransactionTo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SystemTrxToRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(BalanceServer).SystemTransaction(ctx, in)
+		return srv.(BalanceServer).SystemTransactionTo(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Balance_SystemTransaction_FullMethodName,
+		FullMethod: Balance_SystemTransactionTo_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BalanceServer).SystemTransaction(ctx, req.(*SystemTrxRequest))
+		return srv.(BalanceServer).SystemTransactionTo(ctx, req.(*SystemTrxToRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Balance_SystemTransactionFrom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SystemTrxFromRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BalanceServer).SystemTransactionFrom(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Balance_SystemTransactionFrom_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BalanceServer).SystemTransactionFrom(ctx, req.(*SystemTrxFromRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -180,8 +214,12 @@ var Balance_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*BalanceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "SystemTransaction",
-			Handler:    _Balance_SystemTransaction_Handler,
+			MethodName: "SystemTransactionTo",
+			Handler:    _Balance_SystemTransactionTo_Handler,
+		},
+		{
+			MethodName: "SystemTransactionFrom",
+			Handler:    _Balance_SystemTransactionFrom_Handler,
 		},
 		{
 			MethodName: "UserTransaction",

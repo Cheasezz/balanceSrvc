@@ -12,11 +12,11 @@ import (
 )
 
 type System interface {
-	Transaction(
+	TransactionTo(
 		ctx context.Context,
 		userId uuid.UUID,
 		amount int64,
-		trxType blnc.SystemTrxType,
+		trxType blnc.SystemTrxToType,
 	) error
 }
 

@@ -22,30 +22,26 @@ func New(l logger.Logger, db *repo.Repo, tr *trxtyperegistry.Registry) *service 
 	return &service{l, db, tr}
 }
 
-func (s *service) Transaction(
+func (s *service) TransactionTo(
 	ctx context.Context,
 	userId uuid.UUID,
 	amount int64,
-	trxType blnc.SystemTrxType,
+	trxType blnc.SystemTrxToType,
 ) error {
 
-	const op = "systemsrvc.Transaction"
+	const op = "systemsrvc.TransactionTo"
 
-	tType, err := s.rg.SystemType(trxType)
+	tType, err := s.rg.SystemToType(trxType)
 	if err != nil {
-		return fmt.Errorf("op=%s, err=", op, err)
+		return fmt.Errorf("op=%s, err=%w", op, err)
 	}
 
 	trxInfo := &core.Transaction{
-		Type_id: tType.Id,
-		Amount:  amount,
-	}
-	if amount < 0 {
-		trxInfo.Sender_id = userId
-	} else {
-		trxInfo.Resipient_id = userId
+		Type_id:      tType.Id,
+		Resipient_id: userId,
+		Amount:       amount,
 	}
 
-	s.db.System.Transaction(ctx, trxInfo)
+	s.db.System.TransactionTo(ctx, trxInfo)
 	return nil
 }

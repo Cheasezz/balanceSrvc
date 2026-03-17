@@ -8,25 +8,37 @@ import (
 )
 
 const (
-	errUnknowSysTrxType = "unknow system transaction type"
-	errUnknowUsrTrxType = "unknow user transaction type"
+	errUnknowSysTrxToType   = "unknow system transaction(to) type"
+	errUnknowSysTrxFromType = "unknow system transaction(from) type"
+	errUnknowUsrTrxType     = "unknow user transaction type"
 )
 
 const (
-	systemTypePrefix = "SYSTEM_TRX_TYPE_"
-	userTypePrefix   = "USER_TRX_TYPE_"
+	systemToTypePrefix   = "SYSTEM_TRX_TO_TYPE_"
+	systemFromTypePrefix = "SYSTEM_TRX_FROM_TYPE_"
+	userTypePrefix       = "USER_TRX_TYPE_"
 )
 
 type Registry struct {
-	system map[blnc.SystemTrxType]*core.TrxType
-	user   map[blnc.UserTrxType]*core.TrxType
+	systemTo   map[blnc.SystemTrxToType]*core.TrxType
+	systemFrom map[blnc.SystemTrxFromType]*core.TrxType
+	user       map[blnc.UserTrxType]*core.TrxType
 }
 
 func New(trxTypes map[string]*core.TrxType) (*Registry, error) {
-	system, err := buildEnumMap[blnc.SystemTrxType](
-		blnc.SystemTrxType_name,
+	systemTo, err := buildEnumMap[blnc.SystemTrxToType](
+		blnc.SystemTrxToType_name,
 		trxTypes,
-		systemTypePrefix,
+		systemToTypePrefix,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	systemFrom, err := buildEnumMap[blnc.SystemTrxFromType](
+		blnc.SystemTrxFromType_name,
+		trxTypes,
+		systemFromTypePrefix,
 	)
 	if err != nil {
 		return nil, err
@@ -41,15 +53,26 @@ func New(trxTypes map[string]*core.TrxType) (*Registry, error) {
 		return nil, err
 	}
 
-	return &Registry{system: system, user: user}, nil
+	return &Registry{systemTo: systemTo, systemFrom: systemFrom, user: user}, nil
 }
 
-func (r *Registry) SystemType(t blnc.SystemTrxType) (*core.TrxType, error) {
-	const op = "trxtyperegistry.SystemType"
+func (r *Registry) SystemToType(t blnc.SystemTrxToType) (*core.TrxType, error) {
+	const op = "trxtyperegistry.SystemToType"
 
-	info, ok := r.system[t]
+	info, ok := r.systemTo[t]
 	if !ok {
-		return nil, fmt.Errorf("op=%s, err=%s", op, errUnknowSysTrxType)
+		return nil, fmt.Errorf("op=%s, err=%s", op, errUnknowSysTrxToType)
+	}
+
+	return info, nil
+}
+
+func (r *Registry) SystemFromType(t blnc.SystemTrxFromType) (*core.TrxType, error) {
+	const op = "trxtyperegistry.SystemFromType"
+
+	info, ok := r.systemFrom[t]
+	if !ok {
+		return nil, fmt.Errorf("op=%s, err=%s", op, errUnknowSysTrxFromType)
 	}
 
 	return info, nil

@@ -28,12 +28,12 @@ func Register(gRPC *grpc.Server, l logger.Logger, s *service.Service) {
 	blnc.RegisterBalanceServer(gRPC, &serverAPI{srvc: s, l: l})
 }
 
-func (s *serverAPI) SystemTransaction(
+func (s *serverAPI) SystemTransactionTo(
 	ctx context.Context,
-	req *blnc.SystemTrxRequest,
+	req *blnc.SystemTrxToRequest,
 ) (*blnc.SystemTrxResponse, error) {
 
-	const op = "grpcHndlrs.SystemTransaction"
+	const op = "grpcHndlrs.SystemTransactionTo"
 	log := s.l.With("op", op)
 
 	id, err := uuid.Parse(req.GetUserId())
@@ -45,7 +45,7 @@ func (s *serverAPI) SystemTransaction(
 		return nil, status.Error(codes.InvalidArgument, errInvalidAmount)
 	}
 
-	err = s.srvc.System.Transaction(ctx, id, req.GetAmount(), req.SystemTrxType)
+	err = s.srvc.System.TransactionTo(ctx, id, req.GetAmount(), req.SystemTrxType)
 	if err != nil {
 		log.Error(err.Error())
 		return nil, status.Error(codes.Internal, errInternalServer)
