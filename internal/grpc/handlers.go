@@ -29,11 +29,10 @@ const (
 type serverAPI struct {
 	blnc.UnimplementedBalanceServer
 	srvc *service.Service
-	l    logger.Logger
 }
 
 func Register(gRPC *grpc.Server, l logger.Logger, s *service.Service, env string) {
-	blnc.RegisterBalanceServer(gRPC, &serverAPI{srvc: s, l: l})
+	blnc.RegisterBalanceServer(gRPC, &serverAPI{srvc: s})
 	if env == envLocal {
 		reflection.Register(gRPC)
 	}
@@ -43,9 +42,6 @@ func (s *serverAPI) SystemTransactionTo(
 	ctx context.Context,
 	req *blnc.SystemTrxToRequest,
 ) (*blnc.SystemTrxResponse, error) {
-
-	const op = "grpcHndlrs.SystemTransactionTo"
-	log := s.l.With("op", op)
 
 	id, err := uuid.Parse(req.GetUserId())
 	if err != nil {
@@ -58,7 +54,6 @@ func (s *serverAPI) SystemTransactionTo(
 
 	err = s.srvc.System.TransactionTo(ctx, id, req.GetAmount(), req.SystemTrxType)
 	if err != nil {
-		log.Error(err.Error())
 		if errors.Is(err, trxtyperegistry.ErrUnknowSysTrxToType) {
 			return nil, status.Error(codes.InvalidArgument, errInvalidTrxType)
 		}
