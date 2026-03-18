@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
-	trxtyperegistry "github.com/Cheasezz/balanceSrvc/internal/app/trxTypeRegistry"
 	"github.com/Cheasezz/balanceSrvc/internal/service"
+	systemsrvc "github.com/Cheasezz/balanceSrvc/internal/service/system"
 	"github.com/Cheasezz/balanceSrvc/pkg/logger"
 	blnc "github.com/Cheasezz/balanceSrvc/protos/gen"
 	"github.com/google/uuid"
@@ -54,7 +54,7 @@ func (s *serverAPI) SystemTransactionTo(
 
 	err = s.srvc.System.TransactionTo(ctx, id, req.GetAmount(), req.SystemTrxType)
 	if err != nil {
-		if errors.Is(err, trxtyperegistry.ErrUnknowSysTrxToType) {
+		if errors.Is(err, systemsrvc.ErrSystemTrxToType) {
 			return nil, status.Error(codes.InvalidArgument, ErrInvalidTrxType.Error())
 		}
 		return nil, status.Error(codes.Internal, ErrInternalServer.Error())

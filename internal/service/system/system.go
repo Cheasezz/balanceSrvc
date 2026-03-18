@@ -2,6 +2,7 @@ package systemsrvc
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	trxtyperegistry "github.com/Cheasezz/balanceSrvc/internal/app/trxTypeRegistry"
@@ -10,6 +11,10 @@ import (
 	"github.com/Cheasezz/balanceSrvc/pkg/logger"
 	blnc "github.com/Cheasezz/balanceSrvc/protos/gen"
 	"github.com/google/uuid"
+)
+
+var (
+	ErrSystemTrxToType = errors.New("unknow system transaction(to) type")
 )
 
 type service struct {
@@ -35,6 +40,11 @@ func (s *service) TransactionTo(
 	tType, err := s.rg.SystemToType(trxType)
 	if err != nil {
 		log.Error("failed to check transaction type", "err", err)
+
+		if errors.Is(err, trxtyperegistry.ErrUnknowSysTrxToType) {
+			return fmt.Errorf("%s: %w", op, ErrSystemTrxToType)
+		}
+
 		return fmt.Errorf("%s: %w", op, err)
 	}
 
