@@ -1,16 +1,17 @@
 package trxtyperegistry
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/Cheasezz/balanceSrvc/internal/core"
 	blnc "github.com/Cheasezz/balanceSrvc/protos/gen"
 )
 
-const (
-	errUnknowSysTrxToType   = "unknow system transaction(to) type"
-	errUnknowSysTrxFromType = "unknow system transaction(from) type"
-	errUnknowUsrTrxType     = "unknow user transaction type"
+var (
+	ErrUnknowSysTrxToType   = errors.New("unknow system transaction(to) type")
+	ErrUnknowSysTrxFromType = "unknow system transaction(from) type"
+	ErrUnknowUsrTrxType     = "unknow user transaction type"
 )
 
 const (
@@ -61,7 +62,7 @@ func (r *Registry) SystemToType(t blnc.SystemTrxToType) (*core.TrxType, error) {
 
 	info, ok := r.systemTo[t]
 	if !ok {
-		return nil, fmt.Errorf("op=%s, err=%s", op, errUnknowSysTrxToType)
+		return nil, errors.Join(fmt.Errorf("op=%s", op), ErrUnknowSysTrxToType)
 	}
 
 	return info, nil
@@ -72,7 +73,7 @@ func (r *Registry) SystemFromType(t blnc.SystemTrxFromType) (*core.TrxType, erro
 
 	info, ok := r.systemFrom[t]
 	if !ok {
-		return nil, fmt.Errorf("op=%s, err=%s", op, errUnknowSysTrxFromType)
+		return nil, fmt.Errorf("op=%s, err=%s", op, ErrUnknowSysTrxFromType)
 	}
 
 	return info, nil
@@ -83,7 +84,7 @@ func (r *Registry) UserType(t blnc.UserTrxType) (*core.TrxType, error) {
 
 	info, ok := r.user[t]
 	if !ok {
-		return nil, fmt.Errorf("op=%s, err=%s", op, errUnknowUsrTrxType)
+		return nil, fmt.Errorf("op=%s, err=%s", op, ErrUnknowUsrTrxType)
 	}
 
 	return info, nil

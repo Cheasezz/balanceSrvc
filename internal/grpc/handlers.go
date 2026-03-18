@@ -2,20 +2,28 @@ package grpcHndlrs
 
 import (
 	"context"
+	"errors"
 
+	trxtyperegistry "github.com/Cheasezz/balanceSrvc/internal/app/trxTypeRegistry"
 	"github.com/Cheasezz/balanceSrvc/internal/service"
 	"github.com/Cheasezz/balanceSrvc/pkg/logger"
 	blnc "github.com/Cheasezz/balanceSrvc/protos/gen"
 	"github.com/google/uuid"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
 )
 
 const (
 	errInvalidUuid    = "field user_id must be valid uuid"
+	errInvalidTrxType = "unacceptable transaction type"
 	errInvalidAmount  = "field amount must be int and not equal to 0"
 	errInternalServer = "something went wrong on server"
+)
+
+const (
+	envLocal = "local"
 )
 
 type serverAPI struct {
@@ -24,8 +32,11 @@ type serverAPI struct {
 	l    logger.Logger
 }
 
-func Register(gRPC *grpc.Server, l logger.Logger, s *service.Service) {
+func Register(gRPC *grpc.Server, l logger.Logger, s *service.Service, env string) {
 	blnc.RegisterBalanceServer(gRPC, &serverAPI{srvc: s, l: l})
+	if env == envLocal {
+		reflection.Register(gRPC)
+	}
 }
 
 func (s *serverAPI) SystemTransactionTo(
@@ -48,6 +59,9 @@ func (s *serverAPI) SystemTransactionTo(
 	err = s.srvc.System.TransactionTo(ctx, id, req.GetAmount(), req.SystemTrxType)
 	if err != nil {
 		log.Error(err.Error())
+		if errors.Is(err, trxtyperegistry.ErrUnknowSysTrxToType) {
+			return nil, status.Error(codes.InvalidArgument, errInvalidTrxType)
+		}
 		return nil, status.Error(codes.Internal, errInternalServer)
 	}
 

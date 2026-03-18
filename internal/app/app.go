@@ -5,6 +5,7 @@ import (
 
 	grpcapp "github.com/Cheasezz/balanceSrvc/internal/app/grpc"
 	trxtyperegistry "github.com/Cheasezz/balanceSrvc/internal/app/trxTypeRegistry"
+	"github.com/Cheasezz/balanceSrvc/internal/config"
 	"github.com/Cheasezz/balanceSrvc/internal/repo"
 	"github.com/Cheasezz/balanceSrvc/internal/service"
 	"github.com/Cheasezz/balanceSrvc/pkg/logger"
@@ -17,11 +18,11 @@ type App struct {
 	l       logger.Logger
 }
 
-func New(l logger.Logger, p int, pbUrl string) *App {
+func New(l logger.Logger, cfg *config.Config) *App {
 	const op = "app.New"
 	log := l.With("op", op)
 
-	db, err := pgx5.New(pbUrl)
+	db, err := pgx5.New(cfg.PG.URL)
 	if err != nil {
 		log.Error(err.Error())
 		panic("pgx5 can't create")
@@ -43,7 +44,7 @@ func New(l logger.Logger, p int, pbUrl string) *App {
 
 	srvc := service.New(l, repo, registry)
 
-	grpcApp := grpcapp.New(l, p, srvc)
+	grpcApp := grpcapp.New(l, cfg, srvc)
 
 	return &App{GRPCSrv: grpcApp, DB: db, l: l}
 }

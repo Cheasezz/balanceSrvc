@@ -19,7 +19,7 @@ func newTrxRepo(db *pgx5.Pgx) *trxRepo {
 func (r *trxRepo) GetAllTypesInfo(ctx context.Context) (map[string]*core.TrxType, error) {
 	const op = "trxrepo.GetAllTypesInfo"
 
-	query := fmt.Sprintf("SELECT * from %s", trxTable)
+	query := fmt.Sprintf("SELECT * from %s", trxTypesTable)
 
 	rows, err := r.db.Pool.Query(ctx, query)
 	if err != nil {

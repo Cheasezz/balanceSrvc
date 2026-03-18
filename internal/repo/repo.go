@@ -21,8 +21,9 @@ type Repo struct {
 }
 
 const (
-	userTable = "users"
-	trxTable  = "transaction_types"
+	userTable     = "users"
+	trxTable      = "transactions"
+	trxTypesTable = "transaction_types"
 )
 
 func New(db *pgx5.Pgx) *Repo {

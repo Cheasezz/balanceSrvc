@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 
+	"github.com/Cheasezz/balanceSrvc/internal/config"
 	grpcHndlrs "github.com/Cheasezz/balanceSrvc/internal/grpc"
 	"github.com/Cheasezz/balanceSrvc/internal/service"
 	"github.com/Cheasezz/balanceSrvc/pkg/logger"
@@ -16,15 +17,15 @@ type App struct {
 	port       int
 }
 
-func New(l logger.Logger, p int, s *service.Service) *App {
+func New(l logger.Logger, cfg *config.Config, s *service.Service) *App {
 	gRPCServer := grpc.NewServer()
 
-	grpcHndlrs.Register(gRPCServer, l, s)
+	grpcHndlrs.Register(gRPCServer, l, s, cfg.Env)
 
 	return &App{
 		log:        l,
 		gRPCServer: gRPCServer,
-		port:       p,
+		port:       cfg.GRPC.Port,
 	}
 }
 

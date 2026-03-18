@@ -33,7 +33,7 @@ func (s *service) TransactionTo(
 
 	tType, err := s.rg.SystemToType(trxType)
 	if err != nil {
-		return fmt.Errorf("op=%s, err=%w", op, err)
+		return fmt.Errorf("op=%s, %w", op, err)
 	}
 
 	trxInfo := &core.Transaction{
