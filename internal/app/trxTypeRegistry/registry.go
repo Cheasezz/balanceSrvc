@@ -10,8 +10,8 @@ import (
 
 var (
 	ErrUnknowSysTrxToType   = errors.New("unknow system transaction(to) type")
-	ErrUnknowSysTrxFromType = "unknow system transaction(from) type"
-	ErrUnknowUsrTrxType     = "unknow user transaction type"
+	ErrUnknowSysTrxFromType = errors.New("unknow system transaction(from) type")
+	ErrUnknowUsrTrxType     = errors.New("unknow user transaction type")
 )
 
 const (
@@ -62,7 +62,7 @@ func (r *Registry) SystemToType(t blnc.SystemTrxToType) (*core.TrxType, error) {
 
 	info, ok := r.systemTo[t]
 	if !ok {
-		return nil, errors.Join(fmt.Errorf("op=%s", op), ErrUnknowSysTrxToType)
+		return nil, fmt.Errorf("%s: %w", op, ErrUnknowSysTrxToType)
 	}
 
 	return info, nil

@@ -30,10 +30,12 @@ func (s *service) TransactionTo(
 ) error {
 
 	const op = "systemsrvc.TransactionTo"
+	log := s.log.With("op", op)
 
 	tType, err := s.rg.SystemToType(trxType)
 	if err != nil {
-		return fmt.Errorf("op=%s, %w", op, err)
+		log.Error("failed to check transaction type", "err", err)
+		return fmt.Errorf("%s: %w", op, err)
 	}
 
 	trxInfo := &core.Transaction{
