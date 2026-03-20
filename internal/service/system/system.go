@@ -54,6 +54,10 @@ func (s *service) TransactionTo(
 		Amount:       amount,
 	}
 
-	s.db.System.TransactionTo(ctx, trxInfo)
+	err = s.db.System.TransactionTo(ctx, trxInfo)
+	if err != nil {
+		return fmt.Errorf("%s: %w", op, err)
+	}
+
 	return nil
 }
