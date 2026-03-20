@@ -21,7 +21,7 @@ func (r *systemRepo) TransactionTo(ctx context.Context, trx *core.Transaction) e
 
 	tx, err := r.db.Pool.Begin(ctx)
 	if err != nil {
-		return fmt.Errorf("op=%s, err=%w", op, err)
+		return fmt.Errorf("%s: %w", op, err)
 	}
 	defer tx.Rollback(ctx)
 
@@ -31,7 +31,7 @@ func (r *systemRepo) TransactionTo(ctx context.Context, trx *core.Transaction) e
 		userTable)
 	_, err = tx.Exec(ctx, query, trx.Resipient_id, trx.Amount)
 	if err != nil {
-		return fmt.Errorf("op=%s, err=%w", op, err)
+		return fmt.Errorf("%s: %w", op, err)
 	}
 
 	query = fmt.Sprintf(
@@ -39,11 +39,11 @@ func (r *systemRepo) TransactionTo(ctx context.Context, trx *core.Transaction) e
 		trxTable)
 	_, err = tx.Exec(ctx, query, trx.Resipient_id, trx.Type_id, trx.Amount)
 	if err != nil {
-		return fmt.Errorf("op=%s, err=%w", op, err)
+		return fmt.Errorf("%s: %w", op, err)
 	}
 
 	if err = tx.Commit(ctx); err != nil {
-		return fmt.Errorf("op=%s, err=%w", op, err)
+		return fmt.Errorf("%s: %w", op, err)
 	}
 
 	return nil
