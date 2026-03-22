@@ -18,7 +18,7 @@ import (
 )
 
 func TestSystemService_TransactionTo(t *testing.T) {
-	type mockBehavior func(trxT blnc.SystemTrxToType) []*mock.Call
+	type mockBehavior func(trxT blnc.SystemTrxToType, trxTInfo *core.TrxType) []*mock.Call
 	const op = "systemsrvc.TransactionTo"
 
 	l := new(logger.LoggerMock)
@@ -34,62 +34,124 @@ func TestSystemService_TransactionTo(t *testing.T) {
 	sysSrvc := service.NewSystemSrvc(l, rp, rg)
 
 	tests := []struct {
-		name         string
-		userId       uuid.UUID
-		amount       uint64
-		trxType      blnc.SystemTrxToType
-		mockBehavior mockBehavior
-		wantErr      error
+		name             string
+		userId           uuid.UUID
+		amount           uint64
+		trxType          blnc.SystemTrxToType
+		rgstyTrxTypeInfo *core.TrxType
+		mockBehavior     mockBehavior
+		wantErr          error
 	}{
 		{
-			name:    "correct transaction type",
-			userId:  uuid.Max,
-			amount:  10000,
-			trxType: blnc.SystemTrxToType_SYSTEM_TRX_TO_TYPE_DEPOSIT,
-			mockBehavior: func(trxT blnc.SystemTrxToType) []*mock.Call {
+			name:             "correct transaction type",
+			userId:           uuid.UUID([]byte("1284567891234254")),
+			amount:           10000,
+			trxType:          blnc.SystemTrxToType_SYSTEM_TRX_TO_TYPE_DEPOSIT,
+			rgstyTrxTypeInfo: &core.TrxType{Category: "system", Enable: true},
+			mockBehavior: func(trxT blnc.SystemTrxToType, trxTInfo *core.TrxType) []*mock.Call {
 				c1 := l.On("With", "op", op).Return(l)
-				c2 := rg.On("SystemToType", trxT).Return(&core.TrxType{}, nil)
+				c2 := rg.On("SystemToType", trxT).Return(trxTInfo, nil)
 				c3 := system.On("TransactionTo", mock.Anything, mock.Anything).Return(nil)
 				return []*mock.Call{c1, c2, c3}
 			},
 			wantErr: nil,
 		},
 		{
-			name:    "uncorrect transaction type",
-			userId:  uuid.Max,
-			amount:  10000,
-			trxType: blnc.SystemTrxToType_SYSTEM_TRX_TO_TYPE_UNKNOWN,
-			mockBehavior: func(trxT blnc.SystemTrxToType) []*mock.Call {
+			name:             "uncorrect transaction type",
+			userId:           uuid.UUID([]byte("1234567873234254")),
+			amount:           10000,
+			trxType:          blnc.SystemTrxToType_SYSTEM_TRX_TO_TYPE_UNKNOWN,
+			rgstyTrxTypeInfo: &core.TrxType{},
+			mockBehavior: func(trxT blnc.SystemTrxToType, trxTInfo *core.TrxType) []*mock.Call {
 				c1 := l.On("With", "op", op).Return(l)
-				c2 := rg.On("SystemToType", trxT).Return(&core.TrxType{}, trxtyperegistry.ErrUnknowSysTrxToType)
+				c2 := rg.On("SystemToType", trxT).Return(trxTInfo, trxtyperegistry.ErrUnknowSysTrxToType)
 				c3 := l.On("Error", mock.Anything, mock.Anything, mock.Anything)
 				return []*mock.Call{c1, c2, c3}
 			},
 			wantErr: fmt.Errorf("%s: %w", op, service.ErrSystemTrxToType),
 		},
 		{
-			name:    "unexpected error from registry",
-			userId:  uuid.Max,
-			amount:  10000,
-			trxType: blnc.SystemTrxToType_SYSTEM_TRX_TO_TYPE_UNKNOWN,
-			mockBehavior: func(trxT blnc.SystemTrxToType) []*mock.Call {
+			name:             "unexpected error from registry",
+			userId:           uuid.UUID([]byte("1234567891234254")),
+			amount:           10000,
+			trxType:          blnc.SystemTrxToType_SYSTEM_TRX_TO_TYPE_UNKNOWN,
+			rgstyTrxTypeInfo: &core.TrxType{},
+			mockBehavior: func(trxT blnc.SystemTrxToType, trxTInfo *core.TrxType) []*mock.Call {
 				c1 := l.On("With", "op", op).Return(l)
-				c2 := rg.On("SystemToType", trxT).Return(&core.TrxType{}, errors.New("unexpected"))
+				c2 := rg.On("SystemToType", trxT).Return(trxTInfo, errors.New("unexpected"))
 				c3 := l.On("Error", mock.Anything, mock.Anything, mock.Anything)
 				return []*mock.Call{c1, c2, c3}
 			},
 			wantErr: fmt.Errorf("%s: %w", op, errors.New("unexpected")),
 		},
 		{
-			name:    "error when call db method TransactionTo",
-			userId:  uuid.Max,
-			amount:  10000,
-			trxType: blnc.SystemTrxToType_SYSTEM_TRX_TO_TYPE_DEPOSIT,
-			mockBehavior: func(trxT blnc.SystemTrxToType) []*mock.Call {
+			name:             "error transaction type is disabled",
+			userId:           uuid.UUID([]byte("1234567891234985")),
+			amount:           10000,
+			trxType:          blnc.SystemTrxToType_SYSTEM_TRX_TO_TYPE_DEPOSIT,
+			rgstyTrxTypeInfo: &core.TrxType{Category: "system", Enable: false},
+			mockBehavior: func(trxT blnc.SystemTrxToType, trxTInfo *core.TrxType) []*mock.Call {
 				c1 := l.On("With", "op", op).Return(l)
-				c2 := rg.On("SystemToType", trxT).Return(&core.TrxType{}, nil)
-				c3 := system.On("TransactionTo", mock.Anything, mock.Anything).Return(fmt.Errorf("err"))
+				c2 := rg.On("SystemToType", trxT).Return(trxTInfo, nil)
+				c3 := l.On("Error", mock.Anything, mock.Anything, mock.Anything)
 				return []*mock.Call{c1, c2, c3}
+			},
+			wantErr: fmt.Errorf("%s: %w", op, core.ErrDisabledType),
+		},
+		{
+			name:             "error transaction category not 'system'",
+			userId:           uuid.UUID([]byte("1234567891234321")),
+			amount:           10000,
+			trxType:          blnc.SystemTrxToType_SYSTEM_TRX_TO_TYPE_DEPOSIT,
+			rgstyTrxTypeInfo: &core.TrxType{Category: "user", Enable: true},
+			mockBehavior: func(trxT blnc.SystemTrxToType, trxTInfo *core.TrxType) []*mock.Call {
+				c1 := l.On("With", "op", op).Return(l)
+				c2 := rg.On("SystemToType", trxT).Return(trxTInfo, nil)
+				c3 := l.On("Error", mock.Anything, mock.Anything, mock.Anything)
+				return []*mock.Call{c1, c2, c3}
+			},
+			wantErr: fmt.Errorf("%s: %w", op, core.ErrInvalidTrxCategory),
+		},
+		{
+			name:             "error bad user id (uuid.Nil)",
+			userId:           uuid.Nil,
+			amount:           10000,
+			trxType:          blnc.SystemTrxToType_SYSTEM_TRX_TO_TYPE_DEPOSIT,
+			rgstyTrxTypeInfo: &core.TrxType{Category: "system", Enable: true},
+			mockBehavior: func(trxT blnc.SystemTrxToType, trxTInfo *core.TrxType) []*mock.Call {
+				c1 := l.On("With", "op", op).Return(l)
+				c2 := rg.On("SystemToType", trxT).Return(trxTInfo, nil)
+				c3 := l.On("Error", mock.Anything, mock.Anything, mock.Anything)
+				return []*mock.Call{c1, c2, c3}
+			},
+			wantErr: fmt.Errorf("%s: %w", op, core.ErrInvalidUserId),
+		},
+		{
+			name:             "error amount equal to 0",
+			userId:           uuid.UUID([]byte("1234567891234123")),
+			amount:           0,
+			trxType:          blnc.SystemTrxToType_SYSTEM_TRX_TO_TYPE_DEPOSIT,
+			rgstyTrxTypeInfo: &core.TrxType{Category: "system", Enable: true},
+			mockBehavior: func(trxT blnc.SystemTrxToType, trxTInfo *core.TrxType) []*mock.Call {
+				c1 := l.On("With", "op", op).Return(l)
+				c2 := rg.On("SystemToType", trxT).Return(trxTInfo, nil)
+				c3 := l.On("Error", mock.Anything, mock.Anything, mock.Anything)
+				return []*mock.Call{c1, c2, c3}
+			},
+			wantErr: fmt.Errorf("%s: %w", op, core.ErrInvalidAmount),
+		},
+		{
+			name:             "error when call db method TransactionTo",
+			userId:           uuid.UUID([]byte("12345678912345375")),
+			amount:           10000,
+			trxType:          blnc.SystemTrxToType_SYSTEM_TRX_TO_TYPE_DEPOSIT,
+			rgstyTrxTypeInfo: &core.TrxType{Category: "system", Enable: true},
+			mockBehavior: func(trxT blnc.SystemTrxToType, trxTInfo *core.TrxType) []*mock.Call {
+				c1 := l.On("With", "op", op).Return(l)
+				c2 := rg.On("SystemToType", trxT).Return(trxTInfo, nil)
+				c3 := system.On("TransactionTo", mock.Anything, mock.Anything).Return(fmt.Errorf("err"))
+				c4 := l.On("Error", mock.Anything, mock.Anything, mock.Anything)
+				return []*mock.Call{c1, c2, c3, c4}
 			},
 			wantErr: fmt.Errorf("%s: %w", op, fmt.Errorf("err")),
 		},
@@ -97,7 +159,7 @@ func TestSystemService_TransactionTo(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			calls := tt.mockBehavior(tt.trxType)
+			calls := tt.mockBehavior(tt.trxType, tt.rgstyTrxTypeInfo)
 
 			err := sysSrvc.TransactionTo(context.Background(), tt.userId, tt.amount, tt.trxType)
 

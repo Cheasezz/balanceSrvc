@@ -48,14 +48,15 @@ func (s *systemSrvc) TransactionTo(
 		return fmt.Errorf("%s: %w", op, err)
 	}
 
-	trxInfo := &core.Transaction{
-		Type_id:      tType.Id,
-		Resipient_id: userId,
-		Amount:       amount,
+	trxInfo, err := core.NewSystemToUserTrx(tType, userId, amount)
+	if err != nil {
+		log.Error("failed to create new systemToUser transaction", "err", err)
+		return fmt.Errorf("%s: %w", op, err)
 	}
 
 	err = s.db.System.TransactionTo(ctx, trxInfo)
 	if err != nil {
+		log.Error("failed repo method", "err", err)
 		return fmt.Errorf("%s: %w", op, err)
 	}
 

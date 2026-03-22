@@ -17,7 +17,7 @@ import (
 var (
 	ErrInvalidUuid    = errors.New("field user_id must be valid uuid")
 	ErrInvalidTrxType = errors.New("unacceptable transaction type")
-	ErrInvalidAmount  = errors.New("field amount must be int and not equal to 0")
+	ErrInvalidAmount  = errors.New("field amount must be uint64 and not equal to 0")
 	ErrInternalServer = errors.New("something went wrong on server")
 )
 

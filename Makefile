@@ -25,6 +25,6 @@ gen-pb:
 
 .PHONY: cover
 cover:
-	go test -v -short -count=1 -race -coverprofile=coverage.out ./internal/service/system
+	go test -v -short -count=1 -race -coverprofile=coverage.out ./...
 	go tool cover -html=coverage.out
 	rm coverage.out

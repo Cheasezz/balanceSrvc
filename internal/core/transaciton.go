@@ -9,9 +9,9 @@ import (
 
 var (
 	ErrDisabledType       = errors.New("this type is disabled")
-	ErrInvalidAmount      = errors.New("invalid amount value")
-	ErrInvalidTrxCategory = errors.New("invalid transaction category")
-	ErrInvalidUserId      = errors.New("invalid user id")
+	ErrInvalidAmount      = errors.New("invalid amount value, must be uint and not equal to 0")
+	ErrInvalidTrxCategory = errors.New("this type of transaction not in current catagory")
+	ErrInvalidUserId      = errors.New("invalid user id (uuid.Nil)")
 )
 
 type Transaction struct {
@@ -29,4 +29,27 @@ type TrxType struct {
 	Name     string `db:"name"`
 	Category string `db:"category"`
 	Enable   bool   `db:"enable"`
+}
+
+func NewSystemToUserTrx(trxType *TrxType, userId uuid.UUID, amount uint64) (*Transaction, error) {
+	if !trxType.Enable {
+		return nil, ErrDisabledType
+	}
+
+	if trxType.Category != "system" {
+		return nil, ErrInvalidTrxCategory
+	}
+
+	if userId == uuid.Nil {
+		return nil, ErrInvalidUserId
+	}
+
+	if amount <= 0 {
+		return nil, ErrInvalidAmount
+	}
+	return &Transaction{
+		Resipient_id: userId,
+		Type_id:      trxType.Id,
+		Amount:       amount,
+	}, nil
 }
