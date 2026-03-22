@@ -3,9 +3,8 @@ package service
 import (
 	"context"
 
-	trxtyperegistry "github.com/Cheasezz/balanceSrvc/internal/app/trxTypeRegistry"
+	"github.com/Cheasezz/balanceSrvc/internal/core"
 	"github.com/Cheasezz/balanceSrvc/internal/repo"
-	systemsrvc "github.com/Cheasezz/balanceSrvc/internal/service/system"
 	"github.com/Cheasezz/balanceSrvc/pkg/logger"
 	blnc "github.com/Cheasezz/balanceSrvc/protos/gen"
 	"github.com/google/uuid"
@@ -20,12 +19,18 @@ type System interface {
 	) error
 }
 
-type Service struct {
-	System System
+type trxTypeRegistry interface {
+	SystemToType(t blnc.SystemTrxToType) (*core.TrxType, error)
+	SystemFromType(t blnc.SystemTrxFromType) (*core.TrxType, error)
+	UserType(t blnc.UserTrxType) (*core.TrxType, error)
 }
 
-func New(l logger.Logger, db *repo.Repo, tr *trxtyperegistry.Registry) *Service {
+type Service struct {
+	System *systemSrvc
+}
+
+func New(l logger.Logger, db *repo.Repo, tr trxTypeRegistry) *Service {
 	return &Service{
-		System: systemsrvc.New(l, db, tr),
+		System: NewSystemSrvc(l, db, tr),
 	}
 }

@@ -1,4 +1,4 @@
-package systemsrvc
+package service
 
 import (
 	"context"
@@ -17,17 +17,17 @@ var (
 	ErrSystemTrxToType = errors.New("unknow system transaction(to) type")
 )
 
-type service struct {
+type systemSrvc struct {
 	log logger.Logger
 	db  *repo.Repo
-	rg  *trxtyperegistry.Registry
+	rg  trxTypeRegistry
 }
 
-func New(l logger.Logger, db *repo.Repo, tr *trxtyperegistry.Registry) *service {
-	return &service{l, db, tr}
+func NewSystemSrvc(l logger.Logger, db *repo.Repo, tr trxTypeRegistry) *systemSrvc {
+	return &systemSrvc{l, db, tr}
 }
 
-func (s *service) TransactionTo(
+func (s *systemSrvc) TransactionTo(
 	ctx context.Context,
 	userId uuid.UUID,
 	amount int64,

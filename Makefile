@@ -22,3 +22,9 @@ gen-pb:
 	--go-grpc_out=protos/gen --go-grpc_opt=paths=source_relative
 	
 	@echo -e "\n=== protoc: Компиляция завершена ==="
+
+.PHONY: cover
+cover:
+	go test -v -short -count=1 -race -coverprofile=coverage.out ./internal/service/system
+	go tool cover -html=coverage.out
+	rm coverage.out
