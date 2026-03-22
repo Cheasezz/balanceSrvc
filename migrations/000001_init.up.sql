@@ -7,7 +7,8 @@ CREATE TABLE IF NOT EXISTS transaction_types (
   id        SMALLSERIAL  PRIMARY KEY,
   code      TEXT         UNIQUE         NOT NULL,
   name      TEXT         NOT NULL,
-  category  TEXT         NOT NULL       CHECK(category = lower(category))
+  category  TEXT         NOT NULL       CHECK(category = lower(category)),
+  enable    BOOLEAN      NOT NULL       DEFAULT TRUE
 );
 
 INSERT INTO transaction_types (code, name, category) VALUES 

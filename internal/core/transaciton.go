@@ -1,9 +1,17 @@
 package core
 
 import (
+	"errors"
 	"time"
 
 	"github.com/google/uuid"
+)
+
+var (
+	ErrDisabledType       = errors.New("this type is disabled")
+	ErrInvalidAmount      = errors.New("invalid amount value")
+	ErrInvalidTrxCategory = errors.New("invalid transaction category")
+	ErrInvalidUserId      = errors.New("invalid user id")
 )
 
 type Transaction struct {
@@ -20,4 +28,5 @@ type TrxType struct {
 	Code     string `db:"code"`
 	Name     string `db:"name"`
 	Category string `db:"category"`
+	Enable   bool   `db:"enable"`
 }
