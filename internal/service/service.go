@@ -14,7 +14,7 @@ type System interface {
 	TransactionTo(
 		ctx context.Context,
 		userId uuid.UUID,
-		amount int64,
+		amount uint64,
 		trxType blnc.SystemTrxToType,
 	) error
 }

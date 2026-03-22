@@ -32,13 +32,13 @@ enum UserTrxType {
 message SystemTrxToRequest {
   string user_id = 1;
   SystemTrxToType system_trx_type = 2;
-  int64 amount = 3;
+  uint64 amount = 3;
 }
 
 message SystemTrxFromRequest {
   string user_id = 1;
   SystemTrxFromType system_trx_type = 2;
-  int64 amount = 3;
+  uint64 amount = 3;
 }
 
 message SystemTrxResponse {}
@@ -47,7 +47,7 @@ message UserTrxRequest {
   string sender_id = 1;
   string resipient_id = 2;
   UserTrxType user_trx_type = 3;
-  int64 amount = 4;
+  uint64 amount = 4;
 }
 
 message UserTrxResponse {}

@@ -36,7 +36,7 @@ func TestSystemService_TransactionTo(t *testing.T) {
 	tests := []struct {
 		name         string
 		userId       uuid.UUID
-		amount       int64
+		amount       uint64
 		trxType      blnc.SystemTrxToType
 		mockBehavior mockBehavior
 		wantErr      error

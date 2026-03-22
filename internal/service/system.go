@@ -30,7 +30,7 @@ func NewSystemSrvc(l logger.Logger, db *repo.Repo, tr trxTypeRegistry) *systemSr
 func (s *systemSrvc) TransactionTo(
 	ctx context.Context,
 	userId uuid.UUID,
-	amount int64,
+	amount uint64,
 	trxType blnc.SystemTrxToType,
 ) error {
 

@@ -169,7 +169,7 @@ type SystemTrxToRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	SystemTrxType SystemTrxToType        `protobuf:"varint,2,opt,name=system_trx_type,json=systemTrxType,proto3,enum=balance.SystemTrxToType" json:"system_trx_type,omitempty"`
-	Amount        int64                  `protobuf:"varint,3,opt,name=amount,proto3" json:"amount,omitempty"`
+	Amount        uint64                 `protobuf:"varint,3,opt,name=amount,proto3" json:"amount,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -218,7 +218,7 @@ func (x *SystemTrxToRequest) GetSystemTrxType() SystemTrxToType {
 	return SystemTrxToType_SYSTEM_TRX_TO_TYPE_UNKNOWN
 }
 
-func (x *SystemTrxToRequest) GetAmount() int64 {
+func (x *SystemTrxToRequest) GetAmount() uint64 {
 	if x != nil {
 		return x.Amount
 	}
@@ -229,7 +229,7 @@ type SystemTrxFromRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	SystemTrxType SystemTrxFromType      `protobuf:"varint,2,opt,name=system_trx_type,json=systemTrxType,proto3,enum=balance.SystemTrxFromType" json:"system_trx_type,omitempty"`
-	Amount        int64                  `protobuf:"varint,3,opt,name=amount,proto3" json:"amount,omitempty"`
+	Amount        uint64                 `protobuf:"varint,3,opt,name=amount,proto3" json:"amount,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -278,7 +278,7 @@ func (x *SystemTrxFromRequest) GetSystemTrxType() SystemTrxFromType {
 	return SystemTrxFromType_SYSTEM_TRX_FROM_TYPE_UNKNOWN
 }
 
-func (x *SystemTrxFromRequest) GetAmount() int64 {
+func (x *SystemTrxFromRequest) GetAmount() uint64 {
 	if x != nil {
 		return x.Amount
 	}
@@ -326,7 +326,7 @@ type UserTrxRequest struct {
 	SenderId      string                 `protobuf:"bytes,1,opt,name=sender_id,json=senderId,proto3" json:"sender_id,omitempty"`
 	ResipientId   string                 `protobuf:"bytes,2,opt,name=resipient_id,json=resipientId,proto3" json:"resipient_id,omitempty"`
 	UserTrxType   UserTrxType            `protobuf:"varint,3,opt,name=user_trx_type,json=userTrxType,proto3,enum=balance.UserTrxType" json:"user_trx_type,omitempty"`
-	Amount        int64                  `protobuf:"varint,4,opt,name=amount,proto3" json:"amount,omitempty"`
+	Amount        uint64                 `protobuf:"varint,4,opt,name=amount,proto3" json:"amount,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -382,7 +382,7 @@ func (x *UserTrxRequest) GetUserTrxType() UserTrxType {
 	return UserTrxType_USER_TRX_TYPE_UNKNOWN
 }
 
-func (x *UserTrxRequest) GetAmount() int64 {
+func (x *UserTrxRequest) GetAmount() uint64 {
 	if x != nil {
 		return x.Amount
 	}
@@ -521,17 +521,17 @@ const file_balanceSrvc_proto_rawDesc = "" +
 	"\x12SystemTrxToRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12@\n" +
 	"\x0fsystem_trx_type\x18\x02 \x01(\x0e2\x18.balance.SystemTrxToTypeR\rsystemTrxType\x12\x16\n" +
-	"\x06amount\x18\x03 \x01(\x03R\x06amount\"\x8b\x01\n" +
+	"\x06amount\x18\x03 \x01(\x04R\x06amount\"\x8b\x01\n" +
 	"\x14SystemTrxFromRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12B\n" +
 	"\x0fsystem_trx_type\x18\x02 \x01(\x0e2\x1a.balance.SystemTrxFromTypeR\rsystemTrxType\x12\x16\n" +
-	"\x06amount\x18\x03 \x01(\x03R\x06amount\"\x13\n" +
+	"\x06amount\x18\x03 \x01(\x04R\x06amount\"\x13\n" +
 	"\x11SystemTrxResponse\"\xa2\x01\n" +
 	"\x0eUserTrxRequest\x12\x1b\n" +
 	"\tsender_id\x18\x01 \x01(\tR\bsenderId\x12!\n" +
 	"\fresipient_id\x18\x02 \x01(\tR\vresipientId\x128\n" +
 	"\ruser_trx_type\x18\x03 \x01(\x0e2\x14.balance.UserTrxTypeR\vuserTrxType\x12\x16\n" +
-	"\x06amount\x18\x04 \x01(\x03R\x06amount\"\x11\n" +
+	"\x06amount\x18\x04 \x01(\x04R\x06amount\"\x11\n" +
 	"\x0fUserTrxResponse\")\n" +
 	"\x0eBalanceRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\"+\n" +
