@@ -26,7 +26,7 @@ type trxTypeRegistry interface {
 }
 
 type Service struct {
-	System *systemSrvc
+	System System
 }
 
 func New(l logger.Logger, db *repo.Repo, tr trxTypeRegistry) *Service {
