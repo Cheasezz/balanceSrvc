@@ -2,6 +2,7 @@ package repo
 
 import (
 	"context"
+	"errors"
 
 	"github.com/Cheasezz/balanceSrvc/internal/core"
 	"github.com/Cheasezz/balanceSrvc/pkg/pgx5"
@@ -9,6 +10,7 @@ import (
 
 type System interface {
 	TransactionTo(c context.Context, trx *core.Transaction) error
+	TransactionFrom(c context.Context, trx *core.Transaction) error
 }
 
 type Transaction interface {
@@ -24,6 +26,10 @@ const (
 	userTable     = "users"
 	trxTable      = "transactions"
 	trxTypesTable = "transaction_types"
+)
+
+var (
+	ErrInsuffBalance = errors.New("insufficient balance")
 )
 
 func New(db *pgx5.Pgx) *Repo {

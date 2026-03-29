@@ -73,7 +73,7 @@ func (r *Registry) SystemFromType(t blnc.SystemTrxFromType) (*core.TrxType, erro
 
 	info, ok := r.systemFrom[t]
 	if !ok {
-		return nil, fmt.Errorf("op=%s, err=%s", op, ErrUnknowSysTrxFromType)
+		return nil, fmt.Errorf("%s: %w", op, ErrUnknowSysTrxFromType)
 	}
 
 	return info, nil
@@ -84,7 +84,7 @@ func (r *Registry) UserType(t blnc.UserTrxType) (*core.TrxType, error) {
 
 	info, ok := r.user[t]
 	if !ok {
-		return nil, fmt.Errorf("op=%s, err=%s", op, ErrUnknowUsrTrxType)
+		return nil, fmt.Errorf("%s: %w", op, ErrUnknowUsrTrxType)
 	}
 
 	return info, nil

@@ -22,3 +22,14 @@ func (m *SysSrvcMock) TransactionTo(
 	args := m.Called(ctx, userId, amount, trxType)
 	return args.Error(0)
 }
+
+func (m *SysSrvcMock) TransactionFrom(
+	ctx context.Context,
+	userId uuid.UUID,
+	amount uint64,
+	trxType blnc.SystemTrxFromType,
+) error {
+
+	args := m.Called(ctx, userId, amount, trxType)
+	return args.Error(0)
+}

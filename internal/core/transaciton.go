@@ -32,24 +32,46 @@ type TrxType struct {
 }
 
 func NewSystemToUserTrx(trxType *TrxType, userId uuid.UUID, amount uint64) (*Transaction, error) {
-	if !trxType.Enable {
-		return nil, ErrDisabledType
+	err := sysValid(trxType, userId, amount)
+	if err != nil {
+		return nil, err
 	}
 
-	if trxType.Category != "system" {
-		return nil, ErrInvalidTrxCategory
-	}
-
-	if userId == uuid.Nil {
-		return nil, ErrInvalidUserId
-	}
-
-	if amount <= 0 {
-		return nil, ErrInvalidAmount
-	}
 	return &Transaction{
 		Resipient_id: userId,
 		Type_id:      trxType.Id,
 		Amount:       amount,
 	}, nil
+}
+
+func NewSystemFromUserTrx(trxType *TrxType, userId uuid.UUID, amount uint64) (*Transaction, error) {
+	err := sysValid(trxType, userId, amount)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Transaction{
+		Sender_id: userId,
+		Type_id:   trxType.Id,
+		Amount:    amount,
+	}, nil
+}
+
+func sysValid(trxType *TrxType, userId uuid.UUID, amount uint64) error {
+	if !trxType.Enable {
+		return ErrDisabledType
+	}
+
+	if trxType.Category != "system" {
+		return ErrInvalidTrxCategory
+	}
+
+	if userId == uuid.Nil {
+		return ErrInvalidUserId
+	}
+
+	if amount <= 0 {
+		return ErrInvalidAmount
+	}
+	return nil
 }

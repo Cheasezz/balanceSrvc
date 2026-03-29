@@ -17,6 +17,13 @@ type System interface {
 		amount uint64,
 		trxType blnc.SystemTrxToType,
 	) error
+
+	TransactionFrom(
+		ctx context.Context,
+		userId uuid.UUID,
+		amount uint64,
+		trxType blnc.SystemTrxFromType,
+	) error
 }
 
 type trxTypeRegistry interface {

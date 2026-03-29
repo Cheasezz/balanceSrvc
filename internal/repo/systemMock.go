@@ -15,3 +15,8 @@ func (m *SystemRepoMock) TransactionTo(ctx context.Context, trx *core.Transactio
 	args := m.Called(ctx, trx)
 	return args.Error(0)
 }
+
+func (m *SystemRepoMock) TransactionFrom(ctx context.Context, trx *core.Transaction) error {
+	args := m.Called(ctx, trx)
+	return args.Error(0)
+}
