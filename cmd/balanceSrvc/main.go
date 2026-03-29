@@ -20,7 +20,7 @@ func main() {
 	application := app.New(log, cfg)
 	defer application.Close()
 
-	go application.GRPCSrv.MustRun()
+	go application.GRPCApp.MustRun()
 
 	// Graceful shutdown
 

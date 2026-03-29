@@ -1,6 +1,7 @@
 package grpcapp
 
 import (
+	"context"
 	"fmt"
 	"net"
 
@@ -9,12 +10,13 @@ import (
 	"github.com/Cheasezz/balanceSrvc/internal/service"
 	"github.com/Cheasezz/balanceSrvc/pkg/logger"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/test/bufconn"
 )
 
 type App struct {
-	log        logger.Logger
-	gRPCServer *grpc.Server
-	port       int
+	log    logger.Logger
+	Server *grpc.Server
+	port   int
 }
 
 func New(l logger.Logger, cfg *config.Config, s *service.Service) *App {
@@ -23,9 +25,9 @@ func New(l logger.Logger, cfg *config.Config, s *service.Service) *App {
 	grpcHndlrs.Register(gRPCServer, l, s, cfg.Env)
 
 	return &App{
-		log:        l,
-		gRPCServer: gRPCServer,
-		port:       cfg.GRPC.Port,
+		log:    l,
+		Server: gRPCServer,
+		port:   cfg.GRPC.Port,
 	}
 }
 
@@ -46,13 +48,29 @@ func (a *App) Run() error {
 
 	log.Info("gRPC server is running", "addr", l.Addr().String())
 
-	if err = a.gRPCServer.Serve(l); err != nil {
+	if err = a.Server.Serve(l); err != nil {
 		return fmt.Errorf("%s: %w", op, err)
 	}
 
 	return nil
 }
 
-func (a *App) Stop() {
-	a.gRPCServer.GracefulStop()
+func (a *App) RunBufConn() func(context.Context, string) (net.Conn, error) {
+	lis := bufconn.Listen(1024 * 1024)
+
+	go func() {
+		if err := a.Server.Serve(lis); err != nil {
+			panic(err)
+		}
+	}()
+
+	bufDialer := func(context.Context, string) (net.Conn, error) {
+		return lis.Dial()
+	}
+
+	return bufDialer
+}
+
+func (a *App) Close() {
+	a.Server.GracefulStop()
 }

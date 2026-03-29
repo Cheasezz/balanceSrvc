@@ -1,0 +1,8 @@
+env: "local"
+
+grpc:
+  port: 44044
+  timeout: 5s
+
+pg:
+  url: "postgres://postgres:qwerty@localhost:5432/postgres?sslmode=disable"

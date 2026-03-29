@@ -13,7 +13,7 @@ import (
 )
 
 type App struct {
-	GRPCSrv *grpcapp.App
+	GRPCApp *grpcapp.App
 	DB      *pgx5.Pgx
 	l       logger.Logger
 }
@@ -46,7 +46,7 @@ func New(l logger.Logger, cfg *config.Config) *App {
 
 	grpcApp := grpcapp.New(l, cfg, srvc)
 
-	return &App{GRPCSrv: grpcApp, DB: db, l: l}
+	return &App{GRPCApp: grpcApp, DB: db, l: l}
 }
 
 func (a *App) Close() {
@@ -54,7 +54,7 @@ func (a *App) Close() {
 	log := a.l.With("op", op)
 
 	log.Info("stopping gRPC server")
-	a.GRPCSrv.Stop()
+	a.GRPCApp.Close()
 
 	log.Info("stopping DB")
 	a.DB.Close()

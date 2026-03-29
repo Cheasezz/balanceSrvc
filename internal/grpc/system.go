@@ -25,6 +25,7 @@ func (s *ServerAPI) SystemTransactionTo(
 		return nil, status.Error(codes.InvalidArgument, ErrInvalidAmount.Error())
 	}
 
+	// TODO: Добавить обработку ошибки в случае отключенного типа транзакции
 	err = s.Srvc.System.TransactionTo(ctx, id, req.GetAmount(), req.SystemTrxType)
 	if err != nil {
 		if errors.Is(err, service.ErrSystemTrxToType) {

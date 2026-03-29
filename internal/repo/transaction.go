@@ -31,7 +31,7 @@ func (r *trxRepo) GetAllTypesInfo(ctx context.Context) (map[string]*core.TrxType
 
 	for rows.Next() {
 		var t core.TrxType
-		if err := rows.Scan(&t.Id, &t.Code, &t.Name, &t.Category); err != nil {
+		if err := rows.Scan(&t.Id, &t.Code, &t.Name, &t.Category, &t.Enable); err != nil {
 			return nil, fmt.Errorf("%s: %w", op, err)
 		}
 
