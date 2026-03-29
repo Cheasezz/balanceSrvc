@@ -14,7 +14,8 @@ import (
 )
 
 var (
-	ErrSystemTrxToType = errors.New("unknow system transaction(to) type")
+	ErrSystemTrxToType       = errors.New("unknow system transaction(to) type")
+	ErrSystemTrxTypeDisabled = errors.New("this type is disabled")
 )
 
 type systemSrvc struct {
@@ -51,6 +52,9 @@ func (s *systemSrvc) TransactionTo(
 	trxInfo, err := core.NewSystemToUserTrx(tType, userId, amount)
 	if err != nil {
 		log.Error("failed to create new systemToUser transaction", "err", err)
+		if errors.Is(err, core.ErrDisabledType) {
+			return fmt.Errorf("%s: %w", op, ErrSystemTrxTypeDisabled)
+		}
 		return fmt.Errorf("%s: %w", op, err)
 	}
 

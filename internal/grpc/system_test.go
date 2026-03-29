@@ -89,6 +89,22 @@ func TestSystemHandler_TransactionTo(t *testing.T) {
 			wantErr:  status.Error(codes.InvalidArgument, grpcHndlrs.ErrInvalidTrxType.Error()),
 		},
 		{
+			name: "error service check disabled transaction type",
+			req: &blnc.SystemTrxToRequest{
+				UserId:        "37166f7a-f430-49e9-8306-8fba9fbf4311",
+				SystemTrxType: blnc.SystemTrxToType_SYSTEM_TRX_TO_TYPE_DEPOSIT,
+				Amount:        10000,
+			},
+			mockBehavior: func() []*mock.Call {
+				c1 := sysSrvc.On(
+					"TransactionTo", mock.Anything, mock.Anything, mock.Anything, mock.Anything,
+				).Return(service.ErrSystemTrxTypeDisabled)
+				return []*mock.Call{c1}
+			},
+			wantResp: nil,
+			wantErr:  status.Error(codes.InvalidArgument, grpcHndlrs.ErrSystemTrxTypeDisabled.Error()),
+		},
+		{
 			name: "unexpected error when check transaction type in service",
 			req: &blnc.SystemTrxToRequest{
 				UserId:        "37166f7a-f430-49e9-8306-8fba9fbf4311",
