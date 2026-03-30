@@ -96,7 +96,7 @@ func TestSystemService_TransactionTo(t *testing.T) {
 				c3 := l.On("Error", mock.Anything, mock.Anything, mock.Anything)
 				return []*mock.Call{c1, c2, c3}
 			},
-			wantErr: fmt.Errorf("%s: %w", op, core.ErrDisabledType),
+			wantErr: fmt.Errorf("%s: %w", op, service.ErrSystemTrxTypeDisabled),
 		},
 		{
 			name:             "error transaction category not 'system'",
