@@ -13,12 +13,17 @@ type System interface {
 	TransactionFrom(c context.Context, trx *core.Transaction) error
 }
 
+type User interface {
+	TransactionToUser(c context.Context, trx *core.Transaction) error
+}
+
 type Transaction interface {
 	GetAllTypesInfo(ctx context.Context) (map[string]*core.TrxType, error)
 }
 
 type Repo struct {
 	System System
+	User   User
 	Trx    Transaction
 }
 
@@ -35,6 +40,7 @@ var (
 func New(db *pgx5.Pgx) *Repo {
 	return &Repo{
 		System: newSystemRepo(db),
+		User:   newUserRepo(db),
 		Trx:    newTrxRepo(db),
 	}
 }

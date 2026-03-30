@@ -12,12 +12,12 @@ import (
 )
 
 var (
-	ErrInvalidUuid           = errors.New("field user_id must be valid uuid")
-	ErrInvalidTrxType        = errors.New("unacceptable transaction type")
-	ErrSystemTrxTypeDisabled = errors.New("transaction with this type doesent accept at this moment")
-	ErrInvalidAmount         = errors.New("field amount must be uint64 and not equal to 0")
-	ErrInternalServer        = errors.New("something went wrong on server")
-	ErrInsuffBalance         = errors.New("insufficient balance")
+	ErrInvalidUuid     = errors.New("field user_id must be valid uuid")
+	ErrInvalidTrxType  = errors.New("unacceptable transaction type")
+	ErrTrxTypeDisabled = errors.New("transaction with this type doesent accept at this moment")
+	ErrInvalidAmount   = errors.New("field amount must be uint64 and not equal to 0")
+	ErrInternalServer  = errors.New("something went wrong on server")
+	ErrInsuffBalance   = errors.New("insufficient balance")
 )
 
 const (
@@ -34,14 +34,6 @@ func Register(gRPC *grpc.Server, l logger.Logger, s *service.Service, env string
 	if env == envLocal {
 		reflection.Register(gRPC)
 	}
-}
-
-func (s *ServerAPI) UserTransaction(
-	ctx context.Context,
-	req *blnc.UserTrxRequest,
-) (*blnc.UserTrxResponse, error) {
-	panic("Implement me pls")
-	//...
 }
 
 func (s *ServerAPI) UserBalance(

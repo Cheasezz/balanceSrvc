@@ -2,12 +2,17 @@ package service
 
 import (
 	"context"
+	"errors"
 
 	"github.com/Cheasezz/balanceSrvc/internal/core"
 	"github.com/Cheasezz/balanceSrvc/internal/repo"
 	"github.com/Cheasezz/balanceSrvc/pkg/logger"
 	blnc "github.com/Cheasezz/balanceSrvc/protos/gen"
 	"github.com/google/uuid"
+)
+
+var (
+	ErrInsuffBalance = errors.New("insufficient balance")
 )
 
 type System interface {
@@ -26,6 +31,16 @@ type System interface {
 	) error
 }
 
+type User interface {
+	TransactionToUser(
+		ctx context.Context,
+		sender,
+		resipient uuid.UUID,
+		amount uint64,
+		trxType blnc.UserTrxType,
+	) error
+}
+
 type trxTypeRegistry interface {
 	SystemToType(t blnc.SystemTrxToType) (*core.TrxType, error)
 	SystemFromType(t blnc.SystemTrxFromType) (*core.TrxType, error)
@@ -34,10 +49,12 @@ type trxTypeRegistry interface {
 
 type Service struct {
 	System System
+	User   User
 }
 
 func New(l logger.Logger, db *repo.Repo, tr trxTypeRegistry) *Service {
 	return &Service{
 		System: NewSystemSrvc(l, db, tr),
+		User:   NewUserSrvc(l, db, tr),
 	}
 }

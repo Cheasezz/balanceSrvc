@@ -12,6 +12,7 @@ var (
 	ErrInvalidAmount      = errors.New("invalid amount value, must be uint and not equal to 0")
 	ErrInvalidTrxCategory = errors.New("this type of transaction not in current catagory")
 	ErrInvalidUserId      = errors.New("invalid user id (uuid.Nil)")
+	ErrSameIds            = errors.New("Ids must be not equal")
 )
 
 type Transaction struct {
@@ -57,6 +58,20 @@ func NewSystemFromUserTrx(trxType *TrxType, userId uuid.UUID, amount uint64) (*T
 	}, nil
 }
 
+func NewUserToUserTrx(trxType *TrxType, sender, resipient uuid.UUID, amount uint64) (*Transaction, error) {
+	err := usrValid(trxType, sender, resipient, amount)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Transaction{
+		Sender_id:    sender,
+		Resipient_id: resipient,
+		Type_id:      trxType.Id,
+		Amount:       amount,
+	}, nil
+}
+
 func sysValid(trxType *TrxType, userId uuid.UUID, amount uint64) error {
 	if !trxType.Enable {
 		return ErrDisabledType
@@ -68,6 +83,29 @@ func sysValid(trxType *TrxType, userId uuid.UUID, amount uint64) error {
 
 	if userId == uuid.Nil {
 		return ErrInvalidUserId
+	}
+
+	if amount <= 0 {
+		return ErrInvalidAmount
+	}
+	return nil
+}
+
+func usrValid(trxType *TrxType, sender, resipient uuid.UUID, amount uint64) error {
+	if !trxType.Enable {
+		return ErrDisabledType
+	}
+
+	if trxType.Category != "user" {
+		return ErrInvalidTrxCategory
+	}
+
+	if sender == uuid.Nil || resipient == uuid.Nil {
+		return ErrInvalidUserId
+	}
+
+	if sender == resipient {
+		return ErrSameIds
 	}
 
 	if amount <= 0 {

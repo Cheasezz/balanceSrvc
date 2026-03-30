@@ -31,7 +31,7 @@ func (s *ServerAPI) SystemTransactionTo(
 		case errors.Is(err, service.ErrSystemTrxToType):
 			return nil, status.Error(codes.InvalidArgument, ErrInvalidTrxType.Error())
 		case errors.Is(err, service.ErrSystemTrxTypeDisabled):
-			return nil, status.Error(codes.InvalidArgument, ErrSystemTrxTypeDisabled.Error())
+			return nil, status.Error(codes.InvalidArgument, ErrTrxTypeDisabled.Error())
 		default:
 			return nil, status.Error(codes.Internal, ErrInternalServer.Error())
 		}
@@ -60,7 +60,7 @@ func (s *ServerAPI) SystemTransactionFrom(
 		case errors.Is(err, service.ErrSystemTrxFromType):
 			return nil, status.Error(codes.InvalidArgument, ErrInvalidTrxType.Error())
 		case errors.Is(err, service.ErrSystemTrxTypeDisabled):
-			return nil, status.Error(codes.InvalidArgument, ErrSystemTrxTypeDisabled.Error())
+			return nil, status.Error(codes.InvalidArgument, ErrTrxTypeDisabled.Error())
 		case errors.Is(err, service.ErrInsuffBalance):
 			return nil, status.Error(codes.InvalidArgument, ErrInsuffBalance.Error())
 		default:
