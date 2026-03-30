@@ -29,9 +29,9 @@ func (s *ServerAPI) SystemTransactionTo(
 	if err != nil {
 		switch {
 		case errors.Is(err, service.ErrSystemTrxToType):
-			return nil, status.Error(codes.InvalidArgument, ErrInvalidTrxType.Error())
+			return nil, status.Error(codes.InvalidArgument, err.Error())
 		case errors.Is(err, service.ErrSystemTrxTypeDisabled):
-			return nil, status.Error(codes.InvalidArgument, ErrTrxTypeDisabled.Error())
+			return nil, status.Error(codes.InvalidArgument, err.Error())
 		default:
 			return nil, status.Error(codes.Internal, ErrInternalServer.Error())
 		}
@@ -58,11 +58,11 @@ func (s *ServerAPI) SystemTransactionFrom(
 	if err != nil {
 		switch {
 		case errors.Is(err, service.ErrSystemTrxFromType):
-			return nil, status.Error(codes.InvalidArgument, ErrInvalidTrxType.Error())
+			return nil, status.Error(codes.InvalidArgument, err.Error())
 		case errors.Is(err, service.ErrSystemTrxTypeDisabled):
-			return nil, status.Error(codes.InvalidArgument, ErrTrxTypeDisabled.Error())
+			return nil, status.Error(codes.InvalidArgument, err.Error())
 		case errors.Is(err, service.ErrInsuffBalance):
-			return nil, status.Error(codes.InvalidArgument, ErrInsuffBalance.Error())
+			return nil, status.Error(codes.InvalidArgument, err.Error())
 		default:
 			return nil, status.Error(codes.Internal, ErrInternalServer.Error())
 		}

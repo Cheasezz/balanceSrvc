@@ -3,7 +3,6 @@ package service_test
 import (
 	"context"
 	"errors"
-	"fmt"
 	"testing"
 
 	trxtyperegistry "github.com/Cheasezz/balanceSrvc/internal/app/trxTypeRegistry"
@@ -73,7 +72,7 @@ func TestUserService_TransactionToUser(t *testing.T) {
 				c3 := l.On("Error", mock.Anything, mock.Anything, mock.Anything)
 				return []*mock.Call{c1, c2, c3}
 			},
-			wantErr: fmt.Errorf("%s: %w", op, service.ErrUsrTrxType),
+			wantErr: service.ErrUsrTrxType,
 		},
 		{
 			name:             "unexpected error from registry",
@@ -88,7 +87,7 @@ func TestUserService_TransactionToUser(t *testing.T) {
 				c3 := l.On("Error", mock.Anything, mock.Anything, mock.Anything)
 				return []*mock.Call{c1, c2, c3}
 			},
-			wantErr: fmt.Errorf("%s: %w", op, errors.New("unexpected")),
+			wantErr: errors.New("unexpected"),
 		},
 		{
 			name:             "error transaction type is disabled",
@@ -103,7 +102,7 @@ func TestUserService_TransactionToUser(t *testing.T) {
 				c3 := l.On("Error", mock.Anything, mock.Anything, mock.Anything)
 				return []*mock.Call{c1, c2, c3}
 			},
-			wantErr: fmt.Errorf("%s: %w", op, service.ErrUserTrxTypeDisabled),
+			wantErr: service.ErrUserTrxTypeDisabled,
 		},
 		{
 			name:             "error same ids",
@@ -118,7 +117,7 @@ func TestUserService_TransactionToUser(t *testing.T) {
 				c3 := l.On("Error", mock.Anything, mock.Anything, mock.Anything)
 				return []*mock.Call{c1, c2, c3}
 			},
-			wantErr: fmt.Errorf("%s: %w", op, service.ErrSameIds),
+			wantErr: service.ErrSameIds,
 		},
 		{
 			name:             "error transaction category not 'user'",
@@ -133,7 +132,7 @@ func TestUserService_TransactionToUser(t *testing.T) {
 				c3 := l.On("Error", mock.Anything, mock.Anything, mock.Anything)
 				return []*mock.Call{c1, c2, c3}
 			},
-			wantErr: fmt.Errorf("%s: %w", op, core.ErrInvalidTrxCategory),
+			wantErr: core.ErrInvalidTrxCategory,
 		},
 		{
 			name:             "error insufficient balance db method TransactionToUser",
@@ -149,7 +148,7 @@ func TestUserService_TransactionToUser(t *testing.T) {
 				c4 := l.On("Error", mock.Anything, mock.Anything, mock.Anything)
 				return []*mock.Call{c1, c2, c3, c4}
 			},
-			wantErr: fmt.Errorf("%s: %w", op, service.ErrInsuffBalance),
+			wantErr: service.ErrInsuffBalance,
 		},
 		{
 			name:             "error when call db method TransactionToUser",
@@ -165,7 +164,7 @@ func TestUserService_TransactionToUser(t *testing.T) {
 				c4 := l.On("Error", mock.Anything, mock.Anything, mock.Anything)
 				return []*mock.Call{c1, c2, c3, c4}
 			},
-			wantErr: fmt.Errorf("%s: %w", op, errors.New("err")),
+			wantErr: errors.New("err"),
 		},
 	}
 

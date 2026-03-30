@@ -86,7 +86,7 @@ func TestSystemHandler_TransactionTo(t *testing.T) {
 				return []*mock.Call{c1}
 			},
 			wantResp: nil,
-			wantErr:  status.Error(codes.InvalidArgument, grpcHndlrs.ErrInvalidTrxType.Error()),
+			wantErr:  status.Error(codes.InvalidArgument, service.ErrSystemTrxToType.Error()),
 		},
 		{
 			name: "error service check disabled transaction type",
@@ -102,7 +102,7 @@ func TestSystemHandler_TransactionTo(t *testing.T) {
 				return []*mock.Call{c1}
 			},
 			wantResp: nil,
-			wantErr:  status.Error(codes.InvalidArgument, grpcHndlrs.ErrTrxTypeDisabled.Error()),
+			wantErr:  status.Error(codes.InvalidArgument, service.ErrSystemTrxTypeDisabled.Error()),
 		},
 		{
 			name: "unexpected error when check transaction type in service",
@@ -211,7 +211,7 @@ func TestSystemHandler_TransactionFrom(t *testing.T) {
 				return []*mock.Call{c1}
 			},
 			wantResp: nil,
-			wantErr:  status.Error(codes.InvalidArgument, grpcHndlrs.ErrInvalidTrxType.Error()),
+			wantErr:  status.Error(codes.InvalidArgument, service.ErrSystemTrxFromType.Error()),
 		},
 		{
 			name: "error service check disabled transaction type",
@@ -227,7 +227,7 @@ func TestSystemHandler_TransactionFrom(t *testing.T) {
 				return []*mock.Call{c1}
 			},
 			wantResp: nil,
-			wantErr:  status.Error(codes.InvalidArgument, grpcHndlrs.ErrTrxTypeDisabled.Error()),
+			wantErr:  status.Error(codes.InvalidArgument, service.ErrSystemTrxTypeDisabled.Error()),
 		},
 		{
 			name: "error service insufficient balance",
@@ -243,7 +243,7 @@ func TestSystemHandler_TransactionFrom(t *testing.T) {
 				return []*mock.Call{c1}
 			},
 			wantResp: nil,
-			wantErr:  status.Error(codes.InvalidArgument, grpcHndlrs.ErrInsuffBalance.Error()),
+			wantErr:  status.Error(codes.InvalidArgument, service.ErrInsuffBalance.Error()),
 		},
 		{
 			name: "unexpected error when check transaction type in service",

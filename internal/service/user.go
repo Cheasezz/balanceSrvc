@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	trxtyperegistry "github.com/Cheasezz/balanceSrvc/internal/app/trxTypeRegistry"
 	"github.com/Cheasezz/balanceSrvc/internal/core"
@@ -45,10 +44,10 @@ func (s *userSrvc) TransactionToUser(
 		log.Error("failed to check transaction type", "err", err)
 
 		if errors.Is(err, trxtyperegistry.ErrUnknowUsrTrxType) {
-			return fmt.Errorf("%s: %w", op, ErrUsrTrxType)
+			return ErrUsrTrxType
 		}
 
-		return fmt.Errorf("%s: %w", op, err)
+		return err
 	}
 
 	trxInfo, err := core.NewUserToUserTrx(tType, sender, resipient, amount)
@@ -56,20 +55,20 @@ func (s *userSrvc) TransactionToUser(
 		log.Error("failed to create new UserToUser transaction", "err", err)
 		switch {
 		case errors.Is(err, core.ErrDisabledType):
-			return fmt.Errorf("%s: %w", op, ErrUserTrxTypeDisabled)
+			return ErrUserTrxTypeDisabled
 		case errors.Is(err, core.ErrSameIds):
-			return fmt.Errorf("%s: %w", op, ErrSameIds)
+			return ErrSameIds
 		}
-		return fmt.Errorf("%s: %w", op, err)
+		return err
 	}
 
 	err = s.db.User.TransactionToUser(ctx, trxInfo)
 	if err != nil {
 		log.Error("failed repo method", "err", err)
 		if errors.Is(err, repo.ErrInsuffBalance) {
-			return fmt.Errorf("%s: %w", op, ErrInsuffBalance)
+			return ErrInsuffBalance
 		}
-		return fmt.Errorf("%s: %w", op, err)
+		return err
 	}
 	return nil
 }

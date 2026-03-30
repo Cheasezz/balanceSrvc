@@ -68,7 +68,7 @@ func TestSystemService_TransactionTo(t *testing.T) {
 				c3 := l.On("Error", mock.Anything, mock.Anything, mock.Anything)
 				return []*mock.Call{c1, c2, c3}
 			},
-			wantErr: fmt.Errorf("%s: %w", op, service.ErrSystemTrxToType),
+			wantErr: service.ErrSystemTrxToType,
 		},
 		{
 			name:             "unexpected error from registry",
@@ -82,7 +82,7 @@ func TestSystemService_TransactionTo(t *testing.T) {
 				c3 := l.On("Error", mock.Anything, mock.Anything, mock.Anything)
 				return []*mock.Call{c1, c2, c3}
 			},
-			wantErr: fmt.Errorf("%s: %w", op, errors.New("unexpected")),
+			wantErr: errors.New("unexpected"),
 		},
 		{
 			name:             "error transaction type is disabled",
@@ -96,7 +96,7 @@ func TestSystemService_TransactionTo(t *testing.T) {
 				c3 := l.On("Error", mock.Anything, mock.Anything, mock.Anything)
 				return []*mock.Call{c1, c2, c3}
 			},
-			wantErr: fmt.Errorf("%s: %w", op, service.ErrSystemTrxTypeDisabled),
+			wantErr: service.ErrSystemTrxTypeDisabled,
 		},
 		{
 			name:             "error transaction category not 'system'",
@@ -110,7 +110,7 @@ func TestSystemService_TransactionTo(t *testing.T) {
 				c3 := l.On("Error", mock.Anything, mock.Anything, mock.Anything)
 				return []*mock.Call{c1, c2, c3}
 			},
-			wantErr: fmt.Errorf("%s: %w", op, core.ErrInvalidTrxCategory),
+			wantErr: core.ErrInvalidTrxCategory,
 		},
 		{
 			name:             "error bad user id (uuid.Nil)",
@@ -124,7 +124,7 @@ func TestSystemService_TransactionTo(t *testing.T) {
 				c3 := l.On("Error", mock.Anything, mock.Anything, mock.Anything)
 				return []*mock.Call{c1, c2, c3}
 			},
-			wantErr: fmt.Errorf("%s: %w", op, core.ErrInvalidUserId),
+			wantErr: core.ErrInvalidUserId,
 		},
 		{
 			name:             "error amount equal to 0",
@@ -138,7 +138,7 @@ func TestSystemService_TransactionTo(t *testing.T) {
 				c3 := l.On("Error", mock.Anything, mock.Anything, mock.Anything)
 				return []*mock.Call{c1, c2, c3}
 			},
-			wantErr: fmt.Errorf("%s: %w", op, core.ErrInvalidAmount),
+			wantErr: core.ErrInvalidAmount,
 		},
 		{
 			name:             "error when call db method TransactionTo",
@@ -153,7 +153,7 @@ func TestSystemService_TransactionTo(t *testing.T) {
 				c4 := l.On("Error", mock.Anything, mock.Anything, mock.Anything)
 				return []*mock.Call{c1, c2, c3, c4}
 			},
-			wantErr: fmt.Errorf("%s: %w", op, fmt.Errorf("err")),
+			wantErr: fmt.Errorf("err"),
 		},
 	}
 
@@ -225,7 +225,7 @@ func TestSystemService_TransactionFrom(t *testing.T) {
 				c3 := l.On("Error", mock.Anything, mock.Anything, mock.Anything)
 				return []*mock.Call{c1, c2, c3}
 			},
-			wantErr: fmt.Errorf("%s: %w", op, service.ErrSystemTrxFromType),
+			wantErr: service.ErrSystemTrxFromType,
 		},
 		{
 			name:             "unexpected error from registry",
@@ -239,7 +239,7 @@ func TestSystemService_TransactionFrom(t *testing.T) {
 				c3 := l.On("Error", mock.Anything, mock.Anything, mock.Anything)
 				return []*mock.Call{c1, c2, c3}
 			},
-			wantErr: fmt.Errorf("%s: %w", op, errors.New("unexpected")),
+			wantErr: errors.New("unexpected"),
 		},
 		{
 			name:             "error transaction type is disabled",
@@ -253,7 +253,7 @@ func TestSystemService_TransactionFrom(t *testing.T) {
 				c3 := l.On("Error", mock.Anything, mock.Anything, mock.Anything)
 				return []*mock.Call{c1, c2, c3}
 			},
-			wantErr: fmt.Errorf("%s: %w", op, core.ErrDisabledType),
+			wantErr: core.ErrDisabledType,
 		},
 		{
 			name:             "error transaction category not 'system'",
@@ -267,7 +267,7 @@ func TestSystemService_TransactionFrom(t *testing.T) {
 				c3 := l.On("Error", mock.Anything, mock.Anything, mock.Anything)
 				return []*mock.Call{c1, c2, c3}
 			},
-			wantErr: fmt.Errorf("%s: %w", op, core.ErrInvalidTrxCategory),
+			wantErr: core.ErrInvalidTrxCategory,
 		},
 		{
 			name:             "error bad user id (uuid.Nil)",
@@ -281,7 +281,7 @@ func TestSystemService_TransactionFrom(t *testing.T) {
 				c3 := l.On("Error", mock.Anything, mock.Anything, mock.Anything)
 				return []*mock.Call{c1, c2, c3}
 			},
-			wantErr: fmt.Errorf("%s: %w", op, core.ErrInvalidUserId),
+			wantErr: core.ErrInvalidUserId,
 		},
 		{
 			name:             "error amount equal to 0",
@@ -295,7 +295,7 @@ func TestSystemService_TransactionFrom(t *testing.T) {
 				c3 := l.On("Error", mock.Anything, mock.Anything, mock.Anything)
 				return []*mock.Call{c1, c2, c3}
 			},
-			wantErr: fmt.Errorf("%s: %w", op, core.ErrInvalidAmount),
+			wantErr: core.ErrInvalidAmount,
 		},
 		{
 			name:             "error when call db method TransactionTo",
@@ -310,7 +310,7 @@ func TestSystemService_TransactionFrom(t *testing.T) {
 				c4 := l.On("Error", mock.Anything, mock.Anything, mock.Anything)
 				return []*mock.Call{c1, c2, c3, c4}
 			},
-			wantErr: fmt.Errorf("%s: %w", op, fmt.Errorf("err")),
+			wantErr: fmt.Errorf("err"),
 		},
 		{
 			name:             "error insufficient balance when call db method TransactionFrom",
@@ -325,7 +325,7 @@ func TestSystemService_TransactionFrom(t *testing.T) {
 				c4 := l.On("Error", mock.Anything, mock.Anything, mock.Anything)
 				return []*mock.Call{c1, c2, c3, c4}
 			},
-			wantErr: fmt.Errorf("%s: %w", op, service.ErrInsuffBalance),
+			wantErr: service.ErrInsuffBalance,
 		},
 	}
 

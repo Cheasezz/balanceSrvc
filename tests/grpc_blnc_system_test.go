@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	grpcHndlrs "github.com/Cheasezz/balanceSrvc/internal/grpc"
+	"github.com/Cheasezz/balanceSrvc/internal/service"
 	blnc "github.com/Cheasezz/balanceSrvc/protos/gen"
 	testsuite "github.com/Cheasezz/balanceSrvc/tests/suite"
 	"github.com/google/uuid"
@@ -57,7 +58,7 @@ func TestGrpcBalance_SystemTransactionTo(t *testing.T) {
 				SystemTrxType: blnc.SystemTrxToType_SYSTEM_TRX_TO_TYPE_UNKNOWN,
 				Amount:        10000,
 			},
-			wantErr: status.Error(codes.InvalidArgument, grpcHndlrs.ErrInvalidTrxType.Error()),
+			wantErr: status.Error(codes.InvalidArgument, service.ErrSystemTrxToType.Error()),
 		},
 	}
 
@@ -70,7 +71,7 @@ func TestGrpcBalance_SystemTransactionTo(t *testing.T) {
 
 			_, err := suit.BalanceClient.SystemTransactionTo(ctx, tt.req)
 
-			require.Equal(t, tt.wantErr, err)
+			require.ErrorIs(t, err, tt.wantErr)
 		})
 	}
 }

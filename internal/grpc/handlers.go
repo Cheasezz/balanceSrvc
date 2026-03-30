@@ -12,12 +12,12 @@ import (
 )
 
 var (
-	ErrInvalidUuid     = errors.New("field user_id must be valid uuid")
-	ErrInvalidTrxType  = errors.New("unacceptable transaction type")
-	ErrTrxTypeDisabled = errors.New("transaction with this type doesent accept at this moment")
-	ErrInvalidAmount   = errors.New("field amount must be uint64 and not equal to 0")
-	ErrInternalServer  = errors.New("something went wrong on server")
-	ErrInsuffBalance   = errors.New("insufficient balance")
+	ErrInvalidUuid = errors.New("field user_id must be valid uuid")
+	// ErrInvalidTrxType  = errors.New("unacceptable transaction type")
+	// ErrTrxTypeDisabled = errors.New("transaction with this type doesent accept at this moment")
+	ErrInvalidAmount  = errors.New("field amount must be uint64 and not equal to 0")
+	ErrInternalServer = errors.New("something went wrong on server")
+	// ErrInsuffBalance   = errors.New("insufficient balance")
 )
 
 const (

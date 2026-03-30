@@ -11,11 +11,6 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-var (
-	ErrUserTrxTypeDisabled = errors.New("transaction with this type doesent accept at this moment")
-	ErrSameIds             = errors.New("Ids must be not equal")
-)
-
 func (s *ServerAPI) UserTransaction(
 	ctx context.Context,
 	req *blnc.UserTrxRequest,
@@ -37,13 +32,13 @@ func (s *ServerAPI) UserTransaction(
 	if err != nil {
 		switch {
 		case errors.Is(err, service.ErrUsrTrxType):
-			return nil, status.Error(codes.InvalidArgument, ErrInvalidTrxType.Error())
+			return nil, status.Error(codes.InvalidArgument, err.Error())
 		case errors.Is(err, service.ErrUserTrxTypeDisabled):
-			return nil, status.Error(codes.InvalidArgument, ErrTrxTypeDisabled.Error())
+			return nil, status.Error(codes.InvalidArgument, err.Error())
 		case errors.Is(err, service.ErrInsuffBalance):
-			return nil, status.Error(codes.InvalidArgument, ErrInsuffBalance.Error())
+			return nil, status.Error(codes.InvalidArgument, err.Error())
 		case errors.Is(err, service.ErrSameIds):
-			return nil, status.Error(codes.InvalidArgument, ErrSameIds.Error())
+			return nil, status.Error(codes.InvalidArgument, err.Error())
 		default:
 			return nil, status.Error(codes.Internal, ErrInternalServer.Error())
 		}
