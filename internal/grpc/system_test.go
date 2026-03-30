@@ -7,6 +7,7 @@ import (
 
 	grpcHndlrs "github.com/Cheasezz/balanceSrvc/internal/grpc"
 	"github.com/Cheasezz/balanceSrvc/internal/service"
+	srvcMock "github.com/Cheasezz/balanceSrvc/internal/service/mocks"
 	blnc "github.com/Cheasezz/balanceSrvc/protos/gen"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -17,7 +18,7 @@ import (
 func TestSystemHandler_TransactionTo(t *testing.T) {
 	type mockBehavior func() []*mock.Call
 
-	sysSrvc := new(service.SysSrvcMock)
+	sysSrvc := new(srvcMock.System)
 	s := &service.Service{
 		System: sysSrvc,
 	}
@@ -142,7 +143,7 @@ func TestSystemHandler_TransactionTo(t *testing.T) {
 func TestSystemHandler_TransactionFrom(t *testing.T) {
 	type mockBehavior func() []*mock.Call
 
-	sysSrvc := new(service.SysSrvcMock)
+	sysSrvc := new(srvcMock.System)
 	s := &service.Service{
 		System: sysSrvc,
 	}

@@ -1,4 +1,4 @@
-package repo
+package repoMock
 
 import (
 	"context"
@@ -7,16 +7,16 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-type SystemRepoMock struct {
+type System struct {
 	mock.Mock
 }
 
-func (m *SystemRepoMock) TransactionTo(ctx context.Context, trx *core.Transaction) error {
+func (m *System) TransactionTo(ctx context.Context, trx *core.Transaction) error {
 	args := m.Called(ctx, trx)
 	return args.Error(0)
 }
 
-func (m *SystemRepoMock) TransactionFrom(ctx context.Context, trx *core.Transaction) error {
+func (m *System) TransactionFrom(ctx context.Context, trx *core.Transaction) error {
 	args := m.Called(ctx, trx)
 	return args.Error(0)
 }

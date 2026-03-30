@@ -1,4 +1,4 @@
-package service
+package srvcMock
 
 import (
 	"context"
@@ -8,11 +8,11 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-type SysSrvcMock struct {
+type System struct {
 	mock.Mock
 }
 
-func (m *SysSrvcMock) TransactionTo(
+func (m *System) TransactionTo(
 	ctx context.Context,
 	userId uuid.UUID,
 	amount uint64,
@@ -23,7 +23,7 @@ func (m *SysSrvcMock) TransactionTo(
 	return args.Error(0)
 }
 
-func (m *SysSrvcMock) TransactionFrom(
+func (m *System) TransactionFrom(
 	ctx context.Context,
 	userId uuid.UUID,
 	amount uint64,

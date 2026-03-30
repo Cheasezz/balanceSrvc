@@ -1,4 +1,4 @@
-package repo
+package repoMock
 
 import (
 	"context"
@@ -7,11 +7,11 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-type TrxRepoMock struct {
+type Trx struct {
 	mock.Mock
 }
 
-func (m *TrxRepoMock) GetAllTypesInfo(ctx context.Context) (map[string]*core.TrxType, error) {
+func (m *Trx) GetAllTypesInfo(ctx context.Context) (map[string]*core.TrxType, error) {
 	args := m.Called(ctx)
 	return args.Get(0).(map[string]*core.TrxType), args.Error(1)
 }

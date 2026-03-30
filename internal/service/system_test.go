@@ -9,6 +9,7 @@ import (
 	trxtyperegistry "github.com/Cheasezz/balanceSrvc/internal/app/trxTypeRegistry"
 	"github.com/Cheasezz/balanceSrvc/internal/core"
 	"github.com/Cheasezz/balanceSrvc/internal/repo"
+	repoMock "github.com/Cheasezz/balanceSrvc/internal/repo/mocks"
 	"github.com/Cheasezz/balanceSrvc/internal/service"
 	"github.com/Cheasezz/balanceSrvc/pkg/logger"
 	blnc "github.com/Cheasezz/balanceSrvc/protos/gen"
@@ -22,8 +23,8 @@ func TestSystemService_TransactionTo(t *testing.T) {
 	const op = "systemsrvc.TransactionTo"
 
 	l := new(logger.LoggerMock)
-	system := new(repo.SystemRepoMock)
-	trx := new(repo.TrxRepoMock)
+	system := new(repoMock.System)
+	trx := new(repoMock.Trx)
 	rp := &repo.Repo{
 		System: system,
 		Trx:    trx,
@@ -179,8 +180,8 @@ func TestSystemService_TransactionFrom(t *testing.T) {
 	const op = "systemsrvc.TransactionFrom"
 
 	l := new(logger.LoggerMock)
-	system := new(repo.SystemRepoMock)
-	trx := new(repo.TrxRepoMock)
+	system := new(repoMock.System)
+	trx := new(repoMock.Trx)
 	rp := &repo.Repo{
 		System: system,
 		Trx:    trx,
