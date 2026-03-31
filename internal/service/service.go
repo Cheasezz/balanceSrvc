@@ -39,6 +39,8 @@ type User interface {
 		amount uint64,
 		trxType blnc.UserTrxType,
 	) error
+
+	Balance(c context.Context, userId uuid.UUID) (int64, error)
 }
 
 type trxTypeRegistry interface {

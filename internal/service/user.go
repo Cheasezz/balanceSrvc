@@ -16,6 +16,7 @@ var (
 	ErrUsrTrxType          = errors.New("unknow user transaction type")
 	ErrUserTrxTypeDisabled = errors.New("this type is disabled")
 	ErrSameIds             = errors.New("Ids must be not equal")
+	ErrIdNotfound          = errors.New("id not found")
 )
 
 type userSrvc struct {
@@ -71,4 +72,19 @@ func (s *userSrvc) TransactionToUser(
 		return err
 	}
 	return nil
+}
+
+func (s *userSrvc) Balance(ctx context.Context, userId uuid.UUID) (int64, error) {
+	const op = "usersrvc.Balance"
+	log := s.log.With("op", op)
+
+	balance, err := s.db.User.Balance(ctx, userId)
+	if err != nil {
+		log.Error("Cant get user balance", "err", err)
+		if errors.Is(err, repo.ErrIdNotfound) {
+			return balance, ErrIdNotfound
+		}
+		return balance, err
+	}
+	return balance, nil
 }

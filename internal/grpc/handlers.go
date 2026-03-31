@@ -1,7 +1,6 @@
 package grpcHndlrs
 
 import (
-	"context"
 	"errors"
 
 	"github.com/Cheasezz/balanceSrvc/internal/service"
@@ -17,6 +16,7 @@ var (
 	// ErrTrxTypeDisabled = errors.New("transaction with this type doesent accept at this moment")
 	ErrInvalidAmount  = errors.New("field amount must be uint64 and not equal to 0")
 	ErrInternalServer = errors.New("something went wrong on server")
+	ErrIdNotFound     = errors.New("id not found")
 	// ErrInsuffBalance   = errors.New("insufficient balance")
 )
 
@@ -34,12 +34,4 @@ func Register(gRPC *grpc.Server, l logger.Logger, s *service.Service, env string
 	if env == envLocal {
 		reflection.Register(gRPC)
 	}
-}
-
-func (s *ServerAPI) UserBalance(
-	ctx context.Context,
-	req *blnc.BalanceRequest,
-) (*blnc.BalanceResponse, error) {
-	panic("Implement me pls")
-	//...
 }

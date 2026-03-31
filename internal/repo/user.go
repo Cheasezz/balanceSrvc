@@ -2,10 +2,13 @@ package repo
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/Cheasezz/balanceSrvc/internal/core"
 	"github.com/Cheasezz/balanceSrvc/pkg/pgx5"
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 )
 
 type userRepo struct {
@@ -58,4 +61,21 @@ func (r *userRepo) TransactionToUser(ctx context.Context, trx *core.Transaction)
 		return fmt.Errorf("%s: %w", op, err)
 	}
 	return nil
+}
+
+func (r *userRepo) Balance(ctx context.Context, userId uuid.UUID) (int64, error) {
+	const op = "userrepo.Balance"
+	var balance int64
+
+	query := fmt.Sprintf("SELECT balance from %s WHERE id = $1", userTable)
+
+	err := r.db.Scany.Get(ctx, r.db.Pool, &balance, query, userId)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return balance, fmt.Errorf("%s: %w", op, ErrIdNotfound)
+		}
+		return balance, err
+	}
+
+	return balance, nil
 }

@@ -6,6 +6,7 @@ import (
 
 	"github.com/Cheasezz/balanceSrvc/internal/core"
 	"github.com/Cheasezz/balanceSrvc/pkg/pgx5"
+	"github.com/google/uuid"
 )
 
 type System interface {
@@ -15,6 +16,7 @@ type System interface {
 
 type User interface {
 	TransactionToUser(c context.Context, trx *core.Transaction) error
+	Balance(c context.Context, userId uuid.UUID) (int64, error)
 }
 
 type Transaction interface {
@@ -35,6 +37,7 @@ const (
 
 var (
 	ErrInsuffBalance = errors.New("insufficient balance")
+	ErrIdNotfound    = errors.New("id not found in db")
 )
 
 func New(db *pgx5.Pgx) *Repo {

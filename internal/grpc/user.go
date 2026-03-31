@@ -46,3 +46,24 @@ func (s *ServerAPI) UserTransaction(
 
 	return &blnc.UserTrxResponse{}, nil
 }
+
+func (s *ServerAPI) UserBalance(
+	ctx context.Context,
+	req *blnc.BalanceRequest,
+) (*blnc.BalanceResponse, error) {
+
+	id, err := uuid.Parse(req.GetUserId())
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, ErrInvalidUuid.Error())
+	}
+
+	balance, err := s.Srvc.User.Balance(ctx, id)
+	if err != nil {
+		if errors.Is(err, service.ErrIdNotfound) {
+			return nil, status.Error(codes.NotFound, ErrIdNotFound.Error())
+		}
+		return nil, status.Error(codes.Internal, ErrInternalServer.Error())
+	}
+
+	return &blnc.BalanceResponse{Balance: balance}, nil
+}
