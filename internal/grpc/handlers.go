@@ -16,7 +16,6 @@ var (
 	// ErrTrxTypeDisabled = errors.New("transaction with this type doesent accept at this moment")
 	ErrInvalidAmount  = errors.New("field amount must be uint64 and not equal to 0")
 	ErrInternalServer = errors.New("something went wrong on server")
-	ErrIdNotFound     = errors.New("id not found")
 	// ErrInsuffBalance   = errors.New("insufficient balance")
 )
 

@@ -194,3 +194,81 @@ func TestUserHandler_TransactionToUser(t *testing.T) {
 		})
 	}
 }
+
+func TestUserHandler_UserBalance(t *testing.T) {
+	type mockBehavior func() []*mock.Call
+
+	usrSrvc := new(srvcMock.User)
+	s := &service.Service{
+		User: usrSrvc,
+	}
+
+	handlers := grpcHndlrs.ServerAPI{
+		blnc.UnimplementedBalanceServer{},
+		s,
+	}
+
+	tests := []struct {
+		name         string
+		req          *blnc.BalanceRequest
+		mockBehavior mockBehavior
+		wantResp     *blnc.BalanceResponse
+		wantErr      error
+	}{
+		{
+			name: "happy path",
+			req:  &blnc.BalanceRequest{UserId: uuid.NewString()},
+			mockBehavior: func() []*mock.Call {
+				c1 := usrSrvc.On("Balance", mock.Anything, mock.Anything).Return(100000, nil)
+				return []*mock.Call{c1}
+			},
+			wantResp: &blnc.BalanceResponse{Balance: 100000},
+			wantErr:  nil,
+		},
+		{
+			name: "error bad uuid",
+			req:  &blnc.BalanceRequest{UserId: "bad uuid"},
+			mockBehavior: func() []*mock.Call {
+				return []*mock.Call{}
+			},
+			wantResp: nil,
+			wantErr:  status.Error(codes.InvalidArgument, grpcHndlrs.ErrInvalidUuid.Error()),
+		},
+		{
+			name: "error uuid not found",
+			req:  &blnc.BalanceRequest{UserId: uuid.NewString()},
+			mockBehavior: func() []*mock.Call {
+				c1 := usrSrvc.On("Balance", mock.Anything, mock.Anything).Return(0, service.ErrIdNotfound)
+				return []*mock.Call{c1}
+			},
+			wantResp: nil,
+			wantErr:  status.Error(codes.NotFound, service.ErrIdNotfound.Error()),
+		},
+		{
+			name: "unexpected error from service layer",
+			req:  &blnc.BalanceRequest{UserId: uuid.NewString()},
+			mockBehavior: func() []*mock.Call {
+				c1 := usrSrvc.On("Balance", mock.Anything, mock.Anything).Return(0, errors.New("err"))
+				return []*mock.Call{c1}
+			},
+			wantResp: nil,
+			wantErr:  status.Error(codes.Internal, grpcHndlrs.ErrInternalServer.Error()),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			calls := tt.mockBehavior()
+
+			resp, err := handlers.UserBalance(context.Background(), tt.req)
+			require.Equal(t, tt.wantResp, resp)
+			require.Equal(t, tt.wantErr, err)
+
+			mock.AssertExpectationsForObjects(t, usrSrvc)
+
+			for _, c := range calls {
+				c.Unset()
+			}
+		})
+	}
+}

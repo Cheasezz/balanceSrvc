@@ -60,7 +60,7 @@ func (s *ServerAPI) UserBalance(
 	balance, err := s.Srvc.User.Balance(ctx, id)
 	if err != nil {
 		if errors.Is(err, service.ErrIdNotfound) {
-			return nil, status.Error(codes.NotFound, ErrIdNotFound.Error())
+			return nil, status.Error(codes.NotFound, err.Error())
 		}
 		return nil, status.Error(codes.Internal, ErrInternalServer.Error())
 	}
