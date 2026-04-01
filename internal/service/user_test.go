@@ -185,3 +185,77 @@ func TestUserService_TransactionToUser(t *testing.T) {
 		})
 	}
 }
+
+func TestUserService_Balance(t *testing.T) {
+	type mockBehavior func() []*mock.Call
+	const op = "usersrvc.Balance"
+
+	l := new(logger.LoggerMock)
+	system := new(repoMock.System)
+	user := new(repoMock.User)
+	trx := new(repoMock.Trx)
+	rp := &repo.Repo{
+		System: system,
+		User:   user,
+		Trx:    trx,
+	}
+
+	rg := new(trxtyperegistry.RegisterMock)
+
+	usrSrvc := service.NewUserSrvc(l, rp, rg)
+	tests := []struct {
+		name         string
+		userId       uuid.UUID
+		mockBehavior mockBehavior
+		wantErr      error
+	}{
+		{
+			name:   "happy path",
+			userId: uuid.New(),
+			mockBehavior: func() []*mock.Call {
+				c1 := l.On("With", "op", op).Return(l)
+				c2 := user.On("Balance", mock.Anything, mock.Anything).Return(10, nil)
+				return []*mock.Call{c1, c2}
+			},
+			wantErr: nil,
+		},
+		{
+			name:   "db error id not found",
+			userId: uuid.New(),
+			mockBehavior: func() []*mock.Call {
+				c1 := l.On("With", "op", op).Return(l)
+				c2 := user.On("Balance", mock.Anything, mock.Anything).Return(0, repo.ErrIdNotfound)
+				c3 := l.On("Error", mock.Anything, mock.Anything, mock.Anything)
+				return []*mock.Call{c1, c2, c3}
+			},
+			wantErr: service.ErrIdNotfound,
+		},
+		{
+			name:   "unexpected error from repo layer",
+			userId: uuid.New(),
+			mockBehavior: func() []*mock.Call {
+				c1 := l.On("With", "op", op).Return(l)
+				c2 := user.On("Balance", mock.Anything, mock.Anything).Return(0, errors.New("err"))
+				c3 := l.On("Error", mock.Anything, mock.Anything, mock.Anything)
+				return []*mock.Call{c1, c2, c3}
+			},
+			wantErr: errors.New("err"),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			calls := tt.mockBehavior()
+
+			_, err := usrSrvc.Balance(context.Background(), tt.userId)
+
+			require.Equal(t, tt.wantErr, err)
+
+			mock.AssertExpectationsForObjects(t, l, system, trx, rg)
+
+			for _, c := range calls {
+				c.Unset()
+			}
+		})
+	}
+}
