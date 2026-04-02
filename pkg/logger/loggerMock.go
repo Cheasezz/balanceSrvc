@@ -1,6 +1,10 @@
 package logger
 
-import "github.com/stretchr/testify/mock"
+import (
+	"context"
+
+	"github.com/stretchr/testify/mock"
+)
 
 type LoggerMock struct {
 	mock.Mock
@@ -25,4 +29,8 @@ func (m *LoggerMock) Error(message string, args ...any) {
 func (m *LoggerMock) With(fields ...any) Logger {
 	args := m.Called(fields...)
 	return args.Get(0).(Logger)
+}
+
+func (m *LoggerMock) Log(ctx context.Context, level int, msg string, args ...any) {
+	m.Called(ctx, level, msg, args)
 }

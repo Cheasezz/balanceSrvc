@@ -11,6 +11,8 @@ require (
 	google.golang.org/protobuf v1.36.10
 )
 
+require github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.3.3 // indirect
+
 require (
 	github.com/BurntSushi/toml v1.2.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
