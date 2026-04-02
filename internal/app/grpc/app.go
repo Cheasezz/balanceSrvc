@@ -3,6 +3,7 @@ package grpcapp
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"net"
 
 	"github.com/Cheasezz/balanceSrvc/internal/config"
@@ -10,7 +11,10 @@ import (
 	"github.com/Cheasezz/balanceSrvc/internal/service"
 	"github.com/Cheasezz/balanceSrvc/pkg/logger"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
+	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/recovery"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/grpc/test/bufconn"
 )
 
@@ -27,7 +31,17 @@ func New(l logger.Logger, cfg *config.Config, s *service.Service) *App {
 			logging.PayloadReceived, logging.PayloadSent,
 		),
 	}
+
+	recoveryOpts := []recovery.Option{
+		recovery.WithRecoveryHandler(func(p any) (err error) {
+			l.Error("Recovered from panic", slog.Any("panic", p))
+
+			return status.Errorf(codes.Internal, "internal error")
+		}),
+	}
+
 	gRPCServer := grpc.NewServer(grpc.ChainUnaryInterceptor(
+		recovery.UnaryServerInterceptor(recoveryOpts...),
 		logging.UnaryServerInterceptor(InterceptorLogger(l), loggingOpts...),
 	))
 
