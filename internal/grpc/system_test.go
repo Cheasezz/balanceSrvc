@@ -1,11 +1,11 @@
-package grpcHndlrs_test
+package grpcSrv_test
 
 import (
 	"context"
 	"errors"
 	"testing"
 
-	grpcHndlrs "github.com/Cheasezz/balanceSrvc/internal/grpc"
+	grpcSrv "github.com/Cheasezz/balanceSrvc/internal/grpc"
 	"github.com/Cheasezz/balanceSrvc/internal/service"
 	srvcMock "github.com/Cheasezz/balanceSrvc/internal/service/mocks"
 	blnc "github.com/Cheasezz/balanceSrvc/protos/gen"
@@ -23,7 +23,7 @@ func TestSystemHandler_TransactionTo(t *testing.T) {
 		System: sysSrvc,
 	}
 
-	handlers := grpcHndlrs.ServerAPI{
+	handlers := grpcSrv.ServerAPI{
 		blnc.UnimplementedBalanceServer{},
 		s,
 	}
@@ -60,7 +60,7 @@ func TestSystemHandler_TransactionTo(t *testing.T) {
 			},
 			mockBehavior: func() []*mock.Call { return []*mock.Call{} },
 			wantResp:     nil,
-			wantErr:      status.Error(codes.InvalidArgument, grpcHndlrs.ErrInvalidUuid.Error()),
+			wantErr:      status.Error(codes.InvalidArgument, grpcSrv.ErrInvalidUuid.Error()),
 		},
 		{
 			name: "error zero amount",
@@ -71,7 +71,7 @@ func TestSystemHandler_TransactionTo(t *testing.T) {
 			},
 			mockBehavior: func() []*mock.Call { return []*mock.Call{} },
 			wantResp:     nil,
-			wantErr:      status.Error(codes.InvalidArgument, grpcHndlrs.ErrInvalidAmount.Error()),
+			wantErr:      status.Error(codes.InvalidArgument, grpcSrv.ErrInvalidAmount.Error()),
 		},
 		{
 			name: "error service check uncorrect transaction type",
@@ -119,7 +119,7 @@ func TestSystemHandler_TransactionTo(t *testing.T) {
 				return []*mock.Call{c1}
 			},
 			wantResp: nil,
-			wantErr:  status.Error(codes.Internal, grpcHndlrs.ErrInternalServer.Error()),
+			wantErr:  status.Error(codes.Internal, grpcSrv.ErrInternalServer.Error()),
 		},
 	}
 
@@ -148,7 +148,7 @@ func TestSystemHandler_TransactionFrom(t *testing.T) {
 		System: sysSrvc,
 	}
 
-	handlers := grpcHndlrs.ServerAPI{
+	handlers := grpcSrv.ServerAPI{
 		blnc.UnimplementedBalanceServer{},
 		s,
 	}
@@ -185,7 +185,7 @@ func TestSystemHandler_TransactionFrom(t *testing.T) {
 			},
 			mockBehavior: func() []*mock.Call { return []*mock.Call{} },
 			wantResp:     nil,
-			wantErr:      status.Error(codes.InvalidArgument, grpcHndlrs.ErrInvalidUuid.Error()),
+			wantErr:      status.Error(codes.InvalidArgument, grpcSrv.ErrInvalidUuid.Error()),
 		},
 		{
 			name: "error zero amount",
@@ -196,7 +196,7 @@ func TestSystemHandler_TransactionFrom(t *testing.T) {
 			},
 			mockBehavior: func() []*mock.Call { return []*mock.Call{} },
 			wantResp:     nil,
-			wantErr:      status.Error(codes.InvalidArgument, grpcHndlrs.ErrInvalidAmount.Error()),
+			wantErr:      status.Error(codes.InvalidArgument, grpcSrv.ErrInvalidAmount.Error()),
 		},
 		{
 			name: "error service check uncorrect transaction type",
@@ -260,7 +260,7 @@ func TestSystemHandler_TransactionFrom(t *testing.T) {
 				return []*mock.Call{c1}
 			},
 			wantResp: nil,
-			wantErr:  status.Error(codes.Internal, grpcHndlrs.ErrInternalServer.Error()),
+			wantErr:  status.Error(codes.Internal, grpcSrv.ErrInternalServer.Error()),
 		},
 	}
 

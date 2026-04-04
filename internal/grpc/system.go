@@ -1,4 +1,4 @@
-package grpcHndlrs
+package grpcSrv
 
 import (
 	"context"

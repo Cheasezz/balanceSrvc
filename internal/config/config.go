@@ -3,24 +3,16 @@ package config
 import (
 	"flag"
 	"os"
-	"time"
 
+	grpcSrv "github.com/Cheasezz/balanceSrvc/internal/grpc"
+	"github.com/Cheasezz/balanceSrvc/pkg/pgx5"
 	"github.com/ilyakaznacheev/cleanenv"
 )
 
 type Config struct {
-	Env  string     `yaml:"env" env-default:"local"`
-	GRPC GRPCConfig `yaml:"grpc" env-required:"true"`
-	PG   PGConfig   `yaml:"pg" env-required:"true"`
-}
-
-type GRPCConfig struct {
-	Port    int           `yaml:"port" env-required:"true"`
-	Timeout time.Duration `yaml:"timeout"`
-}
-
-type PGConfig struct {
-	URL string `yaml:"url" env-required:"true"`
+	Env  string         `yaml:"env" env-default:"local"`
+	GRPC grpcSrv.Config `yaml:"grpc" env-required:"true"`
+	PG   pgx5.Config    `yaml:"pg" env-required:"true"`
 }
 
 func MustLoad() *Config {

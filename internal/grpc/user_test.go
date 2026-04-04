@@ -1,11 +1,11 @@
-package grpcHndlrs_test
+package grpcSrv_test
 
 import (
 	"context"
 	"errors"
 	"testing"
 
-	grpcHndlrs "github.com/Cheasezz/balanceSrvc/internal/grpc"
+	grpcSrv "github.com/Cheasezz/balanceSrvc/internal/grpc"
 	"github.com/Cheasezz/balanceSrvc/internal/service"
 	srvcMock "github.com/Cheasezz/balanceSrvc/internal/service/mocks"
 	blnc "github.com/Cheasezz/balanceSrvc/protos/gen"
@@ -24,7 +24,7 @@ func TestUserHandler_TransactionToUser(t *testing.T) {
 		User: usrSrvc,
 	}
 
-	handlers := grpcHndlrs.ServerAPI{
+	handlers := grpcSrv.ServerAPI{
 		blnc.UnimplementedBalanceServer{},
 		s,
 	}
@@ -65,7 +65,7 @@ func TestUserHandler_TransactionToUser(t *testing.T) {
 			},
 			mockBehavior: func() []*mock.Call { return []*mock.Call{} },
 			wantResp:     nil,
-			wantErr:      status.Error(codes.InvalidArgument, grpcHndlrs.ErrInvalidUuid.Error()),
+			wantErr:      status.Error(codes.InvalidArgument, grpcSrv.ErrInvalidUuid.Error()),
 		},
 		{
 			name: "error resipient bad uuid",
@@ -77,7 +77,7 @@ func TestUserHandler_TransactionToUser(t *testing.T) {
 			},
 			mockBehavior: func() []*mock.Call { return []*mock.Call{} },
 			wantResp:     nil,
-			wantErr:      status.Error(codes.InvalidArgument, grpcHndlrs.ErrInvalidUuid.Error()),
+			wantErr:      status.Error(codes.InvalidArgument, grpcSrv.ErrInvalidUuid.Error()),
 		},
 		{
 			name: "error zero amount",
@@ -89,7 +89,7 @@ func TestUserHandler_TransactionToUser(t *testing.T) {
 			},
 			mockBehavior: func() []*mock.Call { return []*mock.Call{} },
 			wantResp:     nil,
-			wantErr:      status.Error(codes.InvalidArgument, grpcHndlrs.ErrInvalidAmount.Error()),
+			wantErr:      status.Error(codes.InvalidArgument, grpcSrv.ErrInvalidAmount.Error()),
 		},
 		{
 			name: "error service check uncorrect transaction type",
@@ -174,7 +174,7 @@ func TestUserHandler_TransactionToUser(t *testing.T) {
 				return []*mock.Call{c1}
 			},
 			wantResp: nil,
-			wantErr:  status.Error(codes.Internal, grpcHndlrs.ErrInternalServer.Error()),
+			wantErr:  status.Error(codes.Internal, grpcSrv.ErrInternalServer.Error()),
 		},
 	}
 
@@ -203,7 +203,7 @@ func TestUserHandler_UserBalance(t *testing.T) {
 		User: usrSrvc,
 	}
 
-	handlers := grpcHndlrs.ServerAPI{
+	handlers := grpcSrv.ServerAPI{
 		blnc.UnimplementedBalanceServer{},
 		s,
 	}
@@ -232,7 +232,7 @@ func TestUserHandler_UserBalance(t *testing.T) {
 				return []*mock.Call{}
 			},
 			wantResp: nil,
-			wantErr:  status.Error(codes.InvalidArgument, grpcHndlrs.ErrInvalidUuid.Error()),
+			wantErr:  status.Error(codes.InvalidArgument, grpcSrv.ErrInvalidUuid.Error()),
 		},
 		{
 			name: "error uuid not found",
@@ -252,7 +252,7 @@ func TestUserHandler_UserBalance(t *testing.T) {
 				return []*mock.Call{c1}
 			},
 			wantResp: nil,
-			wantErr:  status.Error(codes.Internal, grpcHndlrs.ErrInternalServer.Error()),
+			wantErr:  status.Error(codes.Internal, grpcSrv.ErrInternalServer.Error()),
 		},
 	}
 

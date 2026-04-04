@@ -15,8 +15,11 @@ const (
 	ErrPing          = "ping db error"
 )
 
+type Config struct {
+	URL string `yaml:"url" env-required:"true"`
+}
+
 const (
-	_defaultMinPoolSize       = 5
 	_defaultMaxPoolSize       = 10
 	_defaultConnAttempts      = 10
 	_defaultConnAttemptsDelay = time.Second
@@ -32,7 +35,7 @@ type Pgx struct {
 	Pool  *pgxpool.Pool
 }
 
-func New(url string, opts ...Option) (*Pgx, error) {
+func New(cfg Config, opts ...Option) (*Pgx, error) {
 	const op = "pgx5.New"
 
 	pg := &Pgx{
@@ -47,7 +50,7 @@ func New(url string, opts ...Option) (*Pgx, error) {
 		opt(pg)
 	}
 
-	poolConfig, err := pgxpool.ParseConfig(url)
+	poolConfig, err := pgxpool.ParseConfig(cfg.URL)
 	if err != nil {
 		return nil, fmt.Errorf("op=%s: %s: %w", op, ErrParseCfg, err)
 	}
