@@ -17,7 +17,7 @@ func (m *User) TransactionToUser(ctx context.Context, trx *core.Transaction) err
 	return args.Error(0)
 }
 
-func (m *User) Balance(ctx context.Context, userId uuid.UUID) (int64, error) {
+func (m *User) Balance(ctx context.Context, userId uuid.UUID) (uint64, error) {
 	args := m.Called(ctx, userId)
-	return int64(args.Int(0)), args.Error(1)
+	return uint64(args.Int(0)), args.Error(1)
 }

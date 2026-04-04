@@ -2,7 +2,6 @@ package grpcSrv
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 	"net"
@@ -18,12 +17,6 @@ import (
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
 	"google.golang.org/grpc/test/bufconn"
-)
-
-var (
-	ErrInvalidUuid    = errors.New("field user_id must be valid uuid")
-	ErrInvalidAmount  = errors.New("field amount must be uint64 and not equal to 0")
-	ErrInternalServer = errors.New("something went wrong on server")
 )
 
 type Config struct {

@@ -21,13 +21,13 @@ const (
 )
 
 type Registry struct {
-	systemTo   map[blnc.SystemTrxToType]*core.TrxType
-	systemFrom map[blnc.SystemTrxFromType]*core.TrxType
-	user       map[blnc.UserTrxType]*core.TrxType
+	systemTo   map[int32]*core.TrxType
+	systemFrom map[int32]*core.TrxType
+	user       map[int32]*core.TrxType
 }
 
 func New(trxTypes map[string]*core.TrxType) (*Registry, error) {
-	systemTo, err := buildEnumMap[blnc.SystemTrxToType](
+	systemTo, err := buildEnumMap(
 		blnc.SystemTrxToType_name,
 		trxTypes,
 		systemToTypePrefix,
@@ -36,7 +36,7 @@ func New(trxTypes map[string]*core.TrxType) (*Registry, error) {
 		return nil, err
 	}
 
-	systemFrom, err := buildEnumMap[blnc.SystemTrxFromType](
+	systemFrom, err := buildEnumMap(
 		blnc.SystemTrxFromType_name,
 		trxTypes,
 		systemFromTypePrefix,
@@ -45,7 +45,7 @@ func New(trxTypes map[string]*core.TrxType) (*Registry, error) {
 		return nil, err
 	}
 
-	user, err := buildEnumMap[blnc.UserTrxType](
+	user, err := buildEnumMap(
 		blnc.UserTrxType_name,
 		trxTypes,
 		userTypePrefix,
@@ -57,7 +57,7 @@ func New(trxTypes map[string]*core.TrxType) (*Registry, error) {
 	return &Registry{systemTo: systemTo, systemFrom: systemFrom, user: user}, nil
 }
 
-func (r *Registry) SystemToType(t blnc.SystemTrxToType) (*core.TrxType, error) {
+func (r *Registry) SystemToType(t int32) (*core.TrxType, error) {
 	const op = "trxtyperegistry.SystemToType"
 
 	info, ok := r.systemTo[t]
@@ -68,7 +68,7 @@ func (r *Registry) SystemToType(t blnc.SystemTrxToType) (*core.TrxType, error) {
 	return info, nil
 }
 
-func (r *Registry) SystemFromType(t blnc.SystemTrxFromType) (*core.TrxType, error) {
+func (r *Registry) SystemFromType(t int32) (*core.TrxType, error) {
 	const op = "trxtyperegistry.SystemFromType"
 
 	info, ok := r.systemFrom[t]
@@ -79,7 +79,7 @@ func (r *Registry) SystemFromType(t blnc.SystemTrxFromType) (*core.TrxType, erro
 	return info, nil
 }
 
-func (r *Registry) UserType(t blnc.UserTrxType) (*core.TrxType, error) {
+func (r *Registry) UserType(t int32) (*core.TrxType, error) {
 	const op = "trxtyperegistry.UserType"
 
 	info, ok := r.user[t]

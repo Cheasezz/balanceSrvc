@@ -5,6 +5,7 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/Cheasezz/balanceSrvc/internal/core"
 	grpcSrv "github.com/Cheasezz/balanceSrvc/internal/grpc"
 	"github.com/Cheasezz/balanceSrvc/internal/service"
 	srvcMock "github.com/Cheasezz/balanceSrvc/internal/service/mocks"
@@ -46,12 +47,9 @@ func TestUserHandler_TransactionToUser(t *testing.T) {
 				Amount:      10000,
 			},
 			mockBehavior: func() []*mock.Call {
-				c1 := usrSrvc.On(
-					"TransactionToUser", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything,
-				).Return(nil)
+				c1 := usrSrvc.On("TransactionToUser", mock.Anything, mock.Anything).Return(nil)
 				return []*mock.Call{c1}
 			},
-
 			wantResp: &blnc.UserTrxResponse{},
 			wantErr:  nil,
 		},
@@ -63,9 +61,12 @@ func TestUserHandler_TransactionToUser(t *testing.T) {
 				UserTrxType: blnc.UserTrxType_USER_TRX_TYPE_TRANSFER,
 				Amount:      10000,
 			},
-			mockBehavior: func() []*mock.Call { return []*mock.Call{} },
-			wantResp:     nil,
-			wantErr:      status.Error(codes.InvalidArgument, grpcSrv.ErrInvalidUuid.Error()),
+			mockBehavior: func() []*mock.Call {
+				c1 := usrSrvc.On("TransactionToUser", mock.Anything, mock.Anything).Return(core.ErrInvalidUuid)
+				return []*mock.Call{c1}
+			},
+			wantResp: nil,
+			wantErr:  status.Error(codes.InvalidArgument, core.ErrInvalidUuid.Error()),
 		},
 		{
 			name: "error resipient bad uuid",
@@ -75,9 +76,12 @@ func TestUserHandler_TransactionToUser(t *testing.T) {
 				UserTrxType: blnc.UserTrxType_USER_TRX_TYPE_TRANSFER,
 				Amount:      10000,
 			},
-			mockBehavior: func() []*mock.Call { return []*mock.Call{} },
-			wantResp:     nil,
-			wantErr:      status.Error(codes.InvalidArgument, grpcSrv.ErrInvalidUuid.Error()),
+			mockBehavior: func() []*mock.Call {
+				c1 := usrSrvc.On("TransactionToUser", mock.Anything, mock.Anything).Return(core.ErrInvalidUuid)
+				return []*mock.Call{c1}
+			},
+			wantResp: nil,
+			wantErr:  status.Error(codes.InvalidArgument, core.ErrInvalidUuid.Error()),
 		},
 		{
 			name: "error zero amount",
@@ -87,9 +91,12 @@ func TestUserHandler_TransactionToUser(t *testing.T) {
 				UserTrxType: blnc.UserTrxType_USER_TRX_TYPE_TRANSFER,
 				Amount:      0,
 			},
-			mockBehavior: func() []*mock.Call { return []*mock.Call{} },
-			wantResp:     nil,
-			wantErr:      status.Error(codes.InvalidArgument, grpcSrv.ErrInvalidAmount.Error()),
+			mockBehavior: func() []*mock.Call {
+				c1 := usrSrvc.On("TransactionToUser", mock.Anything, mock.Anything).Return(core.ErrInvalidAmount)
+				return []*mock.Call{c1}
+			},
+			wantResp: nil,
+			wantErr:  status.Error(codes.InvalidArgument, core.ErrInvalidAmount.Error()),
 		},
 		{
 			name: "error service check uncorrect transaction type",
@@ -100,13 +107,12 @@ func TestUserHandler_TransactionToUser(t *testing.T) {
 				Amount:      10000,
 			},
 			mockBehavior: func() []*mock.Call {
-				c1 := usrSrvc.On(
-					"TransactionToUser", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything,
-				).Return(service.ErrUsrTrxType)
+				c1 := usrSrvc.On("TransactionToUser", mock.Anything, mock.Anything).
+					Return(core.ErrUnknownTrxType)
 				return []*mock.Call{c1}
 			},
 			wantResp: nil,
-			wantErr:  status.Error(codes.InvalidArgument, service.ErrUsrTrxType.Error()),
+			wantErr:  status.Error(codes.InvalidArgument, core.ErrUnknownTrxType.Error()),
 		},
 		{
 			name: "error service check disabled transaction type",
@@ -117,13 +123,12 @@ func TestUserHandler_TransactionToUser(t *testing.T) {
 				Amount:      10000,
 			},
 			mockBehavior: func() []*mock.Call {
-				c1 := usrSrvc.On(
-					"TransactionToUser", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything,
-				).Return(service.ErrUserTrxTypeDisabled)
+				c1 := usrSrvc.On("TransactionToUser", mock.Anything, mock.Anything).
+					Return(core.ErrDisabledType)
 				return []*mock.Call{c1}
 			},
 			wantResp: nil,
-			wantErr:  status.Error(codes.InvalidArgument, service.ErrUserTrxTypeDisabled.Error()),
+			wantErr:  status.Error(codes.InvalidArgument, core.ErrDisabledType.Error()),
 		},
 		{
 			name: "error insufficient balance",
@@ -135,12 +140,12 @@ func TestUserHandler_TransactionToUser(t *testing.T) {
 			},
 			mockBehavior: func() []*mock.Call {
 				c1 := usrSrvc.On(
-					"TransactionToUser", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything,
-				).Return(service.ErrInsuffBalance)
+					"TransactionToUser", mock.Anything, mock.Anything,
+				).Return(core.ErrInsuffBalance)
 				return []*mock.Call{c1}
 			},
 			wantResp: nil,
-			wantErr:  status.Error(codes.InvalidArgument, service.ErrInsuffBalance.Error()),
+			wantErr:  status.Error(codes.InvalidArgument, core.ErrInsuffBalance.Error()),
 		},
 		{
 			name: "error same ids",
@@ -152,12 +157,12 @@ func TestUserHandler_TransactionToUser(t *testing.T) {
 			},
 			mockBehavior: func() []*mock.Call {
 				c1 := usrSrvc.On(
-					"TransactionToUser", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything,
-				).Return(service.ErrSameIds)
+					"TransactionToUser", mock.Anything, mock.Anything,
+				).Return(core.ErrSameIds)
 				return []*mock.Call{c1}
 			},
 			wantResp: nil,
-			wantErr:  status.Error(codes.InvalidArgument, service.ErrSameIds.Error()),
+			wantErr:  status.Error(codes.InvalidArgument, core.ErrSameIds.Error()),
 		},
 		{
 			name: "unexpected error service",
@@ -169,12 +174,12 @@ func TestUserHandler_TransactionToUser(t *testing.T) {
 			},
 			mockBehavior: func() []*mock.Call {
 				c1 := usrSrvc.On(
-					"TransactionToUser", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything,
+					"TransactionToUser", mock.Anything, mock.Anything,
 				).Return(errors.New("err"))
 				return []*mock.Call{c1}
 			},
 			wantResp: nil,
-			wantErr:  status.Error(codes.Internal, grpcSrv.ErrInternalServer.Error()),
+			wantErr:  status.Error(codes.Internal, core.ErrInternalServer.Error()),
 		},
 	}
 
@@ -229,20 +234,23 @@ func TestUserHandler_UserBalance(t *testing.T) {
 			name: "error bad uuid",
 			req:  &blnc.BalanceRequest{UserId: "bad uuid"},
 			mockBehavior: func() []*mock.Call {
-				return []*mock.Call{}
+				c1 := usrSrvc.On(
+					"Balance", mock.Anything, mock.Anything,
+				).Return(0, core.ErrInvalidUuid)
+				return []*mock.Call{c1}
 			},
 			wantResp: nil,
-			wantErr:  status.Error(codes.InvalidArgument, grpcSrv.ErrInvalidUuid.Error()),
+			wantErr:  status.Error(codes.InvalidArgument, core.ErrInvalidUuid.Error()),
 		},
 		{
 			name: "error uuid not found",
 			req:  &blnc.BalanceRequest{UserId: uuid.NewString()},
 			mockBehavior: func() []*mock.Call {
-				c1 := usrSrvc.On("Balance", mock.Anything, mock.Anything).Return(0, service.ErrIdNotfound)
+				c1 := usrSrvc.On("Balance", mock.Anything, mock.Anything).Return(0, core.ErrIdNotfound)
 				return []*mock.Call{c1}
 			},
 			wantResp: nil,
-			wantErr:  status.Error(codes.NotFound, service.ErrIdNotfound.Error()),
+			wantErr:  status.Error(codes.NotFound, core.ErrIdNotfound.Error()),
 		},
 		{
 			name: "unexpected error from service layer",
@@ -252,7 +260,7 @@ func TestUserHandler_UserBalance(t *testing.T) {
 				return []*mock.Call{c1}
 			},
 			wantResp: nil,
-			wantErr:  status.Error(codes.Internal, grpcSrv.ErrInternalServer.Error()),
+			wantErr:  status.Error(codes.Internal, core.ErrInternalServer.Error()),
 		},
 	}
 

@@ -471,7 +471,7 @@ func (x *BalanceRequest) GetUserId() string {
 
 type BalanceResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Balance       int64                  `protobuf:"varint,1,opt,name=balance,proto3" json:"balance,omitempty"`
+	Balance       uint64                 `protobuf:"varint,1,opt,name=balance,proto3" json:"balance,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -506,7 +506,7 @@ func (*BalanceResponse) Descriptor() ([]byte, []int) {
 	return file_balanceSrvc_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *BalanceResponse) GetBalance() int64 {
+func (x *BalanceResponse) GetBalance() uint64 {
 	if x != nil {
 		return x.Balance
 	}
@@ -536,7 +536,7 @@ const file_balanceSrvc_proto_rawDesc = "" +
 	"\x0eBalanceRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\"+\n" +
 	"\x0fBalanceResponse\x12\x18\n" +
-	"\abalance\x18\x01 \x01(\x03R\abalance*p\n" +
+	"\abalance\x18\x01 \x01(\x04R\abalance*p\n" +
 	"\x0fSystemTrxToType\x12\x1e\n" +
 	"\x1aSYSTEM_TRX_TO_TYPE_UNKNOWN\x10\x00\x12\x1e\n" +
 	"\x1aSYSTEM_TRX_TO_TYPE_DEPOSIT\x10\x01\x12\x1d\n" +

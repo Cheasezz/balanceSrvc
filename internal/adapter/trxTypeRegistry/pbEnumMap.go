@@ -11,14 +11,14 @@ const (
 	errTrxNotFound = "transaction type from enum protobuff not found in DB"
 )
 
-func buildEnumMap[E ~int32](
+func buildEnumMap(
 	enumNames map[int32]string,
 	dbTrxTypes map[string]*core.TrxType,
 	prefix string,
-) (map[E]*core.TrxType, error) {
+) (map[int32]*core.TrxType, error) {
 	const op = "trxtyperegistry.buildEnumMap"
 
-	res := make(map[E]*core.TrxType)
+	res := make(map[int32]*core.TrxType)
 
 	for val, name := range enumNames {
 		if val == 0 {
@@ -31,7 +31,7 @@ func buildEnumMap[E ~int32](
 		if !ok {
 			return nil, fmt.Errorf("op=%s, err=%s, trxType=%s", op, errTrxNotFound, code)
 		}
-		res[E(val)] = info
+		res[val] = info
 	}
 	return res, nil
 }

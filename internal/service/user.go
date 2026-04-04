@@ -7,16 +7,16 @@ import (
 	"github.com/Cheasezz/balanceSrvc/internal/adapter/postgres"
 	trxtyperegistry "github.com/Cheasezz/balanceSrvc/internal/adapter/trxTypeRegistry"
 	"github.com/Cheasezz/balanceSrvc/internal/core"
+	"github.com/Cheasezz/balanceSrvc/internal/dto"
 	"github.com/Cheasezz/balanceSrvc/pkg/logger"
-	blnc "github.com/Cheasezz/balanceSrvc/protos/gen"
 	"github.com/google/uuid"
 )
 
 var (
-	ErrUsrTrxType          = errors.New("unknow user transaction type")
-	ErrUserTrxTypeDisabled = errors.New("this type is disabled")
-	ErrSameIds             = errors.New("Ids must be not equal")
-	ErrIdNotfound          = errors.New("id not found")
+// ErrUsrTrxType          = errors.New("unknow user transaction type")
+// ErrUserTrxTypeDisabled = errors.New("this type is disabled")
+// ErrSameIds             = errors.New("Ids must be not equal")
+// ErrIdNotfound          = errors.New("id not found")
 )
 
 type userSrvc struct {
@@ -29,37 +29,25 @@ func NewUserSrvc(l logger.Logger, db *postgres.Postgres, tr trxTypeRegistry) *us
 	return &userSrvc{l, db, tr}
 }
 
-func (s *userSrvc) TransactionToUser(
-	ctx context.Context,
-	sender,
-	resipient uuid.UUID,
-	amount uint64,
-	trxType blnc.UserTrxType,
-) error {
+func (s *userSrvc) TransactionToUser(ctx context.Context, input dto.UserTrxInput) error {
 
 	const op = "usersrvc.TransactionToUser"
 	log := s.log.With("op", op)
 
-	tType, err := s.rg.UserType(trxType)
+	tType, err := s.rg.UserType(input.TrxType)
 	if err != nil {
 		log.Error("failed to check transaction type", "err", err)
 
 		if errors.Is(err, trxtyperegistry.ErrUnknowUsrTrxType) {
-			return ErrUsrTrxType
+			return core.ErrUnknownTrxType
 		}
 
 		return err
 	}
 
-	trxInfo, err := core.NewUserToUserTrx(tType, sender, resipient, amount)
+	trxInfo, err := core.NewUserToUserTrx(tType, input.Sender, input.Resipient, input.Amount)
 	if err != nil {
 		log.Error("failed to create new UserToUser transaction", "err", err)
-		switch {
-		case errors.Is(err, core.ErrDisabledType):
-			return ErrUserTrxTypeDisabled
-		case errors.Is(err, core.ErrSameIds):
-			return ErrSameIds
-		}
 		return err
 	}
 
@@ -67,22 +55,27 @@ func (s *userSrvc) TransactionToUser(
 	if err != nil {
 		log.Error("failed postgres method", "err", err)
 		if errors.Is(err, postgres.ErrInsuffBalance) {
-			return ErrInsuffBalance
+			return core.ErrInsuffBalance
 		}
 		return err
 	}
 	return nil
 }
 
-func (s *userSrvc) Balance(ctx context.Context, userId uuid.UUID) (int64, error) {
+func (s *userSrvc) Balance(ctx context.Context, userId string) (uint64, error) {
 	const op = "usersrvc.Balance"
 	log := s.log.With("op", op)
 
-	balance, err := s.pg.User.Balance(ctx, userId)
+	id, err := uuid.Parse(userId)
+	if err != nil {
+		return 0, core.ErrInvalidUuid
+	}
+
+	balance, err := s.pg.User.Balance(ctx, id)
 	if err != nil {
 		log.Error("Cant get user balance", "err", err)
 		if errors.Is(err, postgres.ErrIdNotfound) {
-			return balance, ErrIdNotfound
+			return balance, core.ErrIdNotfound
 		}
 		return balance, err
 	}

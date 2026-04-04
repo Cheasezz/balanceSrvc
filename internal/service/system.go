@@ -7,15 +7,14 @@ import (
 	"github.com/Cheasezz/balanceSrvc/internal/adapter/postgres"
 	trxtyperegistry "github.com/Cheasezz/balanceSrvc/internal/adapter/trxTypeRegistry"
 	"github.com/Cheasezz/balanceSrvc/internal/core"
+	"github.com/Cheasezz/balanceSrvc/internal/dto"
 	"github.com/Cheasezz/balanceSrvc/pkg/logger"
-	blnc "github.com/Cheasezz/balanceSrvc/protos/gen"
-	"github.com/google/uuid"
 )
 
 var (
-	ErrSystemTrxToType       = errors.New("unknow system transaction(to) type")
-	ErrSystemTrxFromType     = errors.New("unknow system transaction(from) type")
-	ErrSystemTrxTypeDisabled = errors.New("this type is disabled")
+// ErrSystemTrxToType       = errors.New("unknow system transaction(to) type")
+// ErrSystemTrxFromType     = errors.New("unknow system transaction(from) type")
+// ErrSystemTrxTypeDisabled = errors.New("this type is disabled")
 )
 
 type systemSrvc struct {
@@ -28,33 +27,28 @@ func NewSystemSrvc(l logger.Logger, db *postgres.Postgres, tr trxTypeRegistry) *
 	return &systemSrvc{l, db, tr}
 }
 
-func (s *systemSrvc) TransactionTo(
-	ctx context.Context,
-	userId uuid.UUID,
-	amount uint64,
-	trxType blnc.SystemTrxToType,
-) error {
+func (s *systemSrvc) TransactionTo(ctx context.Context, input dto.SystemTrxInput) error {
 
 	const op = "systemsrvc.TransactionTo"
 	log := s.log.With("op", op)
 
-	tType, err := s.rg.SystemToType(trxType)
+	tType, err := s.rg.SystemToType(input.TrxType)
 	if err != nil {
 		log.Error("failed to check transaction type", "err", err)
 
 		if errors.Is(err, trxtyperegistry.ErrUnknowSysTrxToType) {
-			return ErrSystemTrxToType
+			return core.ErrUnknownTrxType
 		}
 
 		return err
 	}
 
-	trxInfo, err := core.NewSystemToUserTrx(tType, userId, amount)
+	trxInfo, err := core.NewSystemToUserTrx(tType, input.UserId, input.Amount)
 	if err != nil {
 		log.Error("failed to create new systemToUser transaction", "err", err)
-		if errors.Is(err, core.ErrDisabledType) {
-			return ErrSystemTrxTypeDisabled
-		}
+		// if errors.Is(err, core.ErrDisabledType) {
+		// 	return ErrSystemTrxTypeDisabled
+		// }
 		return err
 	}
 
@@ -67,33 +61,27 @@ func (s *systemSrvc) TransactionTo(
 	return nil
 }
 
-func (s *systemSrvc) TransactionFrom(
-	ctx context.Context,
-	userId uuid.UUID,
-	amount uint64,
-	trxType blnc.SystemTrxFromType,
-) error {
+func (s *systemSrvc) TransactionFrom(ctx context.Context, input dto.SystemTrxInput) error {
 
 	const op = "systemsrvc.TransactionFrom"
 	log := s.log.With("op", op)
 
-	tType, err := s.rg.SystemFromType(trxType)
+	tType, err := s.rg.SystemFromType(input.TrxType)
 	if err != nil {
 		log.Error("failed to check transaction type", "err", err)
-
 		if errors.Is(err, trxtyperegistry.ErrUnknowSysTrxFromType) {
-			return ErrSystemTrxFromType
+			return core.ErrUnknownTrxType
 		}
 
 		return err
 	}
 
-	trxInfo, err := core.NewSystemFromUserTrx(tType, userId, amount)
+	trxInfo, err := core.NewSystemFromUserTrx(tType, input.UserId, input.Amount)
 	if err != nil {
 		log.Error("failed to create new systemFromUser transaction", "err", err)
-		if errors.Is(err, core.ErrDisabledType) {
-			return ErrSystemTrxTypeDisabled
-		}
+		// if errors.Is(err, core.ErrDisabledType) {
+		// 	return ErrSystemTrxTypeDisabled
+		// }
 		return err
 	}
 
@@ -101,7 +89,7 @@ func (s *systemSrvc) TransactionFrom(
 	if err != nil {
 		log.Error("failed postgres method", "err", err)
 		if errors.Is(err, postgres.ErrInsuffBalance) {
-			return ErrInsuffBalance
+			return core.ErrInsuffBalance
 		}
 		return err
 	}

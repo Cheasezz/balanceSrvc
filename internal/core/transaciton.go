@@ -1,18 +1,9 @@
 package core
 
 import (
-	"errors"
 	"time"
 
 	"github.com/google/uuid"
-)
-
-var (
-	ErrDisabledType       = errors.New("this type is disabled")
-	ErrInvalidAmount      = errors.New("invalid amount value, must be uint and not equal to 0")
-	ErrInvalidTrxCategory = errors.New("this type of transaction not in current catagory")
-	ErrInvalidUserId      = errors.New("invalid user id (uuid.Nil)")
-	ErrSameIds            = errors.New("Ids must be not equal")
 )
 
 type Transaction struct {
@@ -32,84 +23,94 @@ type TrxType struct {
 	Enable   bool   `db:"enable"`
 }
 
-func NewSystemToUserTrx(trxType *TrxType, userId uuid.UUID, amount uint64) (*Transaction, error) {
-	err := sysValid(trxType, userId, amount)
+func NewSystemToUserTrx(trxType *TrxType, userId string, amount uint64) (*Transaction, error) {
+	id, err := sysValid(trxType, userId, amount)
 	if err != nil {
 		return nil, err
 	}
 
 	return &Transaction{
-		Resipient_id: userId,
+		Resipient_id: id,
 		Type_id:      trxType.Id,
 		Amount:       amount,
 	}, nil
 }
 
-func NewSystemFromUserTrx(trxType *TrxType, userId uuid.UUID, amount uint64) (*Transaction, error) {
-	err := sysValid(trxType, userId, amount)
+func NewSystemFromUserTrx(trxType *TrxType, userId string, amount uint64) (*Transaction, error) {
+	id, err := sysValid(trxType, userId, amount)
 	if err != nil {
 		return nil, err
 	}
 
 	return &Transaction{
-		Sender_id: userId,
+		Sender_id: id,
 		Type_id:   trxType.Id,
 		Amount:    amount,
 	}, nil
 }
 
-func NewUserToUserTrx(trxType *TrxType, sender, resipient uuid.UUID, amount uint64) (*Transaction, error) {
-	err := usrValid(trxType, sender, resipient, amount)
+func NewUserToUserTrx(trxType *TrxType, sender, resipient string, amount uint64) (*Transaction, error) {
+	send, resip, err := usrValid(trxType, sender, resipient, amount)
 	if err != nil {
 		return nil, err
 	}
 
 	return &Transaction{
-		Sender_id:    sender,
-		Resipient_id: resipient,
+		Sender_id:    send,
+		Resipient_id: resip,
 		Type_id:      trxType.Id,
 		Amount:       amount,
 	}, nil
 }
 
-func sysValid(trxType *TrxType, userId uuid.UUID, amount uint64) error {
+func sysValid(trxType *TrxType, userId string, amount uint64) (uuid.UUID, error) {
+	emptyVal := uuid.UUID{}
 	if !trxType.Enable {
-		return ErrDisabledType
+		return emptyVal, ErrDisabledType
 	}
 
 	if trxType.Category != "system" {
-		return ErrInvalidTrxCategory
+		return emptyVal, ErrInvalidTrxCategory
 	}
 
-	if userId == uuid.Nil {
-		return ErrInvalidUserId
+	id, err := uuid.Parse(userId)
+	if err != nil {
+		return emptyVal, ErrInvalidUuid
 	}
 
 	if amount <= 0 {
-		return ErrInvalidAmount
+		return emptyVal, ErrInvalidAmount
 	}
-	return nil
+	return id, nil
 }
 
-func usrValid(trxType *TrxType, sender, resipient uuid.UUID, amount uint64) error {
+func usrValid(trxType *TrxType, sender, resipient string, amount uint64) (uuid.UUID, uuid.UUID, error) {
+	emptyVal := uuid.UUID{}
+
 	if !trxType.Enable {
-		return ErrDisabledType
+		return emptyVal, emptyVal, ErrDisabledType
 	}
 
 	if trxType.Category != "user" {
-		return ErrInvalidTrxCategory
+		return emptyVal, emptyVal, ErrInvalidTrxCategory
 	}
 
-	if sender == uuid.Nil || resipient == uuid.Nil {
-		return ErrInvalidUserId
+	send, err := uuid.Parse(sender)
+	if err != nil {
+		return emptyVal, emptyVal, ErrInvalidUuid
+	}
+
+	resip, err := uuid.Parse(resipient)
+	if err != nil {
+		return emptyVal, emptyVal, ErrInvalidUuid
 	}
 
 	if sender == resipient {
-		return ErrSameIds
+		return emptyVal, emptyVal, ErrSameIds
 	}
 
 	if amount <= 0 {
-		return ErrInvalidAmount
+		return emptyVal, emptyVal, ErrInvalidAmount
 	}
-	return nil
+	return send, resip, nil
 }

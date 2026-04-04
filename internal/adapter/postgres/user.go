@@ -63,9 +63,9 @@ func (r *userRepo) TransactionToUser(ctx context.Context, trx *core.Transaction)
 	return nil
 }
 
-func (r *userRepo) Balance(ctx context.Context, userId uuid.UUID) (int64, error) {
+func (r *userRepo) Balance(ctx context.Context, userId uuid.UUID) (uint64, error) {
 	const op = "userrepo.Balance"
-	var balance int64
+	var balance uint64
 
 	query := fmt.Sprintf("SELECT balance from %s WHERE id = $1", userTable)
 

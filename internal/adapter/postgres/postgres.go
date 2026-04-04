@@ -16,7 +16,7 @@ type System interface {
 
 type User interface {
 	TransactionToUser(c context.Context, trx *core.Transaction) error
-	Balance(c context.Context, userId uuid.UUID) (int64, error)
+	Balance(c context.Context, userId uuid.UUID) (uint64, error)
 }
 
 type Transaction interface {

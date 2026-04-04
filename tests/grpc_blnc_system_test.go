@@ -4,8 +4,7 @@ import (
 	"context"
 	"testing"
 
-	grpcSrv "github.com/Cheasezz/balanceSrvc/internal/grpc"
-	"github.com/Cheasezz/balanceSrvc/internal/service"
+	"github.com/Cheasezz/balanceSrvc/internal/core"
 	blnc "github.com/Cheasezz/balanceSrvc/protos/gen"
 	testsuite "github.com/Cheasezz/balanceSrvc/tests/suite"
 	"github.com/google/uuid"
@@ -40,7 +39,7 @@ func TestGrpcBalance_SystemTransactionTo(t *testing.T) {
 				SystemTrxType: blnc.SystemTrxToType_SYSTEM_TRX_TO_TYPE_DEPOSIT,
 				Amount:        10000,
 			},
-			wantErr: status.Error(codes.InvalidArgument, grpcSrv.ErrInvalidUuid.Error()),
+			wantErr: status.Error(codes.InvalidArgument, core.ErrInvalidUuid.Error()),
 		},
 		{
 			name: "error zero amount",
@@ -49,7 +48,7 @@ func TestGrpcBalance_SystemTransactionTo(t *testing.T) {
 				SystemTrxType: blnc.SystemTrxToType_SYSTEM_TRX_TO_TYPE_DEPOSIT,
 				Amount:        0,
 			},
-			wantErr: status.Error(codes.InvalidArgument, grpcSrv.ErrInvalidAmount.Error()),
+			wantErr: status.Error(codes.InvalidArgument, core.ErrInvalidAmount.Error()),
 		},
 		{
 			name: "error invalid transaction type",
@@ -58,7 +57,7 @@ func TestGrpcBalance_SystemTransactionTo(t *testing.T) {
 				SystemTrxType: blnc.SystemTrxToType_SYSTEM_TRX_TO_TYPE_UNKNOWN,
 				Amount:        10000,
 			},
-			wantErr: status.Error(codes.InvalidArgument, service.ErrSystemTrxToType.Error()),
+			wantErr: status.Error(codes.InvalidArgument, core.ErrUnknownTrxType.Error()),
 		},
 	}
 
