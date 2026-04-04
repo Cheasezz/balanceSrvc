@@ -3,9 +3,9 @@ package app
 import (
 	"context"
 
+	"github.com/Cheasezz/balanceSrvc/config"
 	"github.com/Cheasezz/balanceSrvc/internal/adapter/postgres"
 	trxtyperegistry "github.com/Cheasezz/balanceSrvc/internal/app/trxTypeRegistry"
-	"github.com/Cheasezz/balanceSrvc/internal/config"
 	grpcSrv "github.com/Cheasezz/balanceSrvc/internal/grpc"
 	"github.com/Cheasezz/balanceSrvc/internal/service"
 	"github.com/Cheasezz/balanceSrvc/pkg/logger"

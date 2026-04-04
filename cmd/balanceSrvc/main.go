@@ -5,8 +5,8 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/Cheasezz/balanceSrvc/config"
 	"github.com/Cheasezz/balanceSrvc/internal/app"
-	"github.com/Cheasezz/balanceSrvc/internal/config"
 	"github.com/Cheasezz/balanceSrvc/pkg/logger"
 )
 
