@@ -5,10 +5,10 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/Cheasezz/balanceSrvc/internal/adapter/postgres"
+	repoMock "github.com/Cheasezz/balanceSrvc/internal/adapter/postgres/mocks"
 	trxtyperegistry "github.com/Cheasezz/balanceSrvc/internal/app/trxTypeRegistry"
 	"github.com/Cheasezz/balanceSrvc/internal/core"
-	"github.com/Cheasezz/balanceSrvc/internal/repo"
-	repoMock "github.com/Cheasezz/balanceSrvc/internal/repo/mocks"
 	"github.com/Cheasezz/balanceSrvc/internal/service"
 	"github.com/Cheasezz/balanceSrvc/pkg/logger"
 	blnc "github.com/Cheasezz/balanceSrvc/protos/gen"
@@ -25,7 +25,7 @@ func TestUserService_TransactionToUser(t *testing.T) {
 	system := new(repoMock.System)
 	user := new(repoMock.User)
 	trx := new(repoMock.Trx)
-	rp := &repo.Repo{
+	rp := &postgres.Postgres{
 		System: system,
 		User:   user,
 		Trx:    trx,
@@ -145,7 +145,7 @@ func TestUserService_TransactionToUser(t *testing.T) {
 			mockBehavior: func(trxT blnc.UserTrxType, trxTInfo *core.TrxType) []*mock.Call {
 				c1 := l.On("With", "op", op).Return(l)
 				c2 := rg.On("UserType", trxT).Return(trxTInfo, nil)
-				c3 := user.On("TransactionToUser", mock.Anything, mock.Anything).Return(repo.ErrInsuffBalance)
+				c3 := user.On("TransactionToUser", mock.Anything, mock.Anything).Return(postgres.ErrInsuffBalance)
 				c4 := l.On("Error", mock.Anything, mock.Anything, mock.Anything)
 				return []*mock.Call{c1, c2, c3, c4}
 			},
@@ -194,7 +194,7 @@ func TestUserService_Balance(t *testing.T) {
 	system := new(repoMock.System)
 	user := new(repoMock.User)
 	trx := new(repoMock.Trx)
-	rp := &repo.Repo{
+	rp := &postgres.Postgres{
 		System: system,
 		User:   user,
 		Trx:    trx,
@@ -224,14 +224,14 @@ func TestUserService_Balance(t *testing.T) {
 			userId: uuid.New(),
 			mockBehavior: func() []*mock.Call {
 				c1 := l.On("With", "op", op).Return(l)
-				c2 := user.On("Balance", mock.Anything, mock.Anything).Return(0, repo.ErrIdNotfound)
+				c2 := user.On("Balance", mock.Anything, mock.Anything).Return(0, postgres.ErrIdNotfound)
 				c3 := l.On("Error", mock.Anything, mock.Anything, mock.Anything)
 				return []*mock.Call{c1, c2, c3}
 			},
 			wantErr: service.ErrIdNotfound,
 		},
 		{
-			name:   "unexpected error from repo layer",
+			name:   "unexpected error from postgres layer",
 			userId: uuid.New(),
 			mockBehavior: func() []*mock.Call {
 				c1 := l.On("With", "op", op).Return(l)

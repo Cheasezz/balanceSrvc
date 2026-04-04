@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 
+	"github.com/Cheasezz/balanceSrvc/internal/adapter/postgres"
 	trxtyperegistry "github.com/Cheasezz/balanceSrvc/internal/app/trxTypeRegistry"
 	"github.com/Cheasezz/balanceSrvc/internal/core"
-	"github.com/Cheasezz/balanceSrvc/internal/repo"
 	"github.com/Cheasezz/balanceSrvc/pkg/logger"
 	blnc "github.com/Cheasezz/balanceSrvc/protos/gen"
 	"github.com/google/uuid"
@@ -21,11 +21,11 @@ var (
 
 type userSrvc struct {
 	log logger.Logger
-	db  *repo.Repo
+	pg  *postgres.Postgres
 	rg  trxTypeRegistry
 }
 
-func NewUserSrvc(l logger.Logger, db *repo.Repo, tr trxTypeRegistry) *userSrvc {
+func NewUserSrvc(l logger.Logger, db *postgres.Postgres, tr trxTypeRegistry) *userSrvc {
 	return &userSrvc{l, db, tr}
 }
 
@@ -63,10 +63,10 @@ func (s *userSrvc) TransactionToUser(
 		return err
 	}
 
-	err = s.db.User.TransactionToUser(ctx, trxInfo)
+	err = s.pg.User.TransactionToUser(ctx, trxInfo)
 	if err != nil {
-		log.Error("failed repo method", "err", err)
-		if errors.Is(err, repo.ErrInsuffBalance) {
+		log.Error("failed postgres method", "err", err)
+		if errors.Is(err, postgres.ErrInsuffBalance) {
 			return ErrInsuffBalance
 		}
 		return err
@@ -78,10 +78,10 @@ func (s *userSrvc) Balance(ctx context.Context, userId uuid.UUID) (int64, error)
 	const op = "usersrvc.Balance"
 	log := s.log.With("op", op)
 
-	balance, err := s.db.User.Balance(ctx, userId)
+	balance, err := s.pg.User.Balance(ctx, userId)
 	if err != nil {
 		log.Error("Cant get user balance", "err", err)
-		if errors.Is(err, repo.ErrIdNotfound) {
+		if errors.Is(err, postgres.ErrIdNotfound) {
 			return balance, ErrIdNotfound
 		}
 		return balance, err

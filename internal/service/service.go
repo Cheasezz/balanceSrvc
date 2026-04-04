@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
+	"github.com/Cheasezz/balanceSrvc/internal/adapter/postgres"
 	"github.com/Cheasezz/balanceSrvc/internal/core"
-	"github.com/Cheasezz/balanceSrvc/internal/repo"
 	"github.com/Cheasezz/balanceSrvc/pkg/logger"
 	blnc "github.com/Cheasezz/balanceSrvc/protos/gen"
 	"github.com/google/uuid"
@@ -54,7 +54,7 @@ type Service struct {
 	User   User
 }
 
-func New(l logger.Logger, db *repo.Repo, tr trxTypeRegistry) *Service {
+func New(l logger.Logger, db *postgres.Postgres, tr trxTypeRegistry) *Service {
 	return &Service{
 		System: NewSystemSrvc(l, db, tr),
 		User:   NewUserSrvc(l, db, tr),

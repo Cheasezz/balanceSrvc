@@ -3,10 +3,10 @@ package app
 import (
 	"context"
 
+	"github.com/Cheasezz/balanceSrvc/internal/adapter/postgres"
 	trxtyperegistry "github.com/Cheasezz/balanceSrvc/internal/app/trxTypeRegistry"
 	"github.com/Cheasezz/balanceSrvc/internal/config"
 	grpcSrv "github.com/Cheasezz/balanceSrvc/internal/grpc"
-	"github.com/Cheasezz/balanceSrvc/internal/repo"
 	"github.com/Cheasezz/balanceSrvc/internal/service"
 	"github.com/Cheasezz/balanceSrvc/pkg/logger"
 	"github.com/Cheasezz/balanceSrvc/pkg/pgx5"
@@ -28,9 +28,9 @@ func New(l logger.Logger, cfg *config.Config) *App {
 		panic("pgx5 can't create")
 	}
 
-	repo := repo.New(db)
+	postgres := postgres.New(db)
 
-	dbTrxTypes, err := repo.Trx.GetAllTypesInfo(context.Background())
+	dbTrxTypes, err := postgres.Trx.GetAllTypesInfo(context.Background())
 	if err != nil {
 		log.Error(err.Error())
 		panic("can't collect db transaction types")
@@ -42,7 +42,7 @@ func New(l logger.Logger, cfg *config.Config) *App {
 		panic("can't create transaction types registry")
 	}
 
-	srvc := service.New(l, repo, registry)
+	srvc := service.New(l, postgres, registry)
 
 	grpcApp := grpcSrv.New(l, cfg.GRPC, srvc, cfg.Env)
 

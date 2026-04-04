@@ -1,4 +1,4 @@
-package repo
+package postgres
 
 import (
 	"context"
@@ -23,7 +23,7 @@ type Transaction interface {
 	GetAllTypesInfo(ctx context.Context) (map[string]*core.TrxType, error)
 }
 
-type Repo struct {
+type Postgres struct {
 	System System
 	User   User
 	Trx    Transaction
@@ -40,8 +40,8 @@ var (
 	ErrIdNotfound    = errors.New("id not found in db")
 )
 
-func New(db *pgx5.Pgx) *Repo {
-	return &Repo{
+func New(db *pgx5.Pgx) *Postgres {
+	return &Postgres{
 		System: newSystemRepo(db),
 		User:   newUserRepo(db),
 		Trx:    newTrxRepo(db),

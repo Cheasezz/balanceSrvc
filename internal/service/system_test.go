@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/Cheasezz/balanceSrvc/internal/adapter/postgres"
+	repoMock "github.com/Cheasezz/balanceSrvc/internal/adapter/postgres/mocks"
 	trxtyperegistry "github.com/Cheasezz/balanceSrvc/internal/app/trxTypeRegistry"
 	"github.com/Cheasezz/balanceSrvc/internal/core"
-	"github.com/Cheasezz/balanceSrvc/internal/repo"
-	repoMock "github.com/Cheasezz/balanceSrvc/internal/repo/mocks"
 	"github.com/Cheasezz/balanceSrvc/internal/service"
 	"github.com/Cheasezz/balanceSrvc/pkg/logger"
 	blnc "github.com/Cheasezz/balanceSrvc/protos/gen"
@@ -25,7 +25,7 @@ func TestSystemService_TransactionTo(t *testing.T) {
 	l := new(logger.LoggerMock)
 	system := new(repoMock.System)
 	trx := new(repoMock.Trx)
-	rp := &repo.Repo{
+	rp := &postgres.Postgres{
 		System: system,
 		Trx:    trx,
 	}
@@ -182,7 +182,7 @@ func TestSystemService_TransactionFrom(t *testing.T) {
 	l := new(logger.LoggerMock)
 	system := new(repoMock.System)
 	trx := new(repoMock.Trx)
-	rp := &repo.Repo{
+	rp := &postgres.Postgres{
 		System: system,
 		Trx:    trx,
 	}
@@ -322,7 +322,7 @@ func TestSystemService_TransactionFrom(t *testing.T) {
 			mockBehavior: func(trxT blnc.SystemTrxFromType, trxTInfo *core.TrxType) []*mock.Call {
 				c1 := l.On("With", "op", op).Return(l)
 				c2 := rg.On("SystemFromType", trxT).Return(trxTInfo, nil)
-				c3 := system.On("TransactionFrom", mock.Anything, mock.Anything).Return(repo.ErrInsuffBalance)
+				c3 := system.On("TransactionFrom", mock.Anything, mock.Anything).Return(postgres.ErrInsuffBalance)
 				c4 := l.On("Error", mock.Anything, mock.Anything, mock.Anything)
 				return []*mock.Call{c1, c2, c3, c4}
 			},

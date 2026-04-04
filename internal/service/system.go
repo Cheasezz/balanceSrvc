@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 
+	"github.com/Cheasezz/balanceSrvc/internal/adapter/postgres"
 	trxtyperegistry "github.com/Cheasezz/balanceSrvc/internal/app/trxTypeRegistry"
 	"github.com/Cheasezz/balanceSrvc/internal/core"
-	"github.com/Cheasezz/balanceSrvc/internal/repo"
 	"github.com/Cheasezz/balanceSrvc/pkg/logger"
 	blnc "github.com/Cheasezz/balanceSrvc/protos/gen"
 	"github.com/google/uuid"
@@ -20,11 +20,11 @@ var (
 
 type systemSrvc struct {
 	log logger.Logger
-	db  *repo.Repo
+	pg  *postgres.Postgres
 	rg  trxTypeRegistry
 }
 
-func NewSystemSrvc(l logger.Logger, db *repo.Repo, tr trxTypeRegistry) *systemSrvc {
+func NewSystemSrvc(l logger.Logger, db *postgres.Postgres, tr trxTypeRegistry) *systemSrvc {
 	return &systemSrvc{l, db, tr}
 }
 
@@ -58,9 +58,9 @@ func (s *systemSrvc) TransactionTo(
 		return err
 	}
 
-	err = s.db.System.TransactionTo(ctx, trxInfo)
+	err = s.pg.System.TransactionTo(ctx, trxInfo)
 	if err != nil {
-		log.Error("failed repo method", "err", err)
+		log.Error("failed postgres method", "err", err)
 		return err
 	}
 
@@ -97,10 +97,10 @@ func (s *systemSrvc) TransactionFrom(
 		return err
 	}
 
-	err = s.db.System.TransactionFrom(ctx, trxInfo)
+	err = s.pg.System.TransactionFrom(ctx, trxInfo)
 	if err != nil {
-		log.Error("failed repo method", "err", err)
-		if errors.Is(err, repo.ErrInsuffBalance) {
+		log.Error("failed postgres method", "err", err)
+		if errors.Is(err, postgres.ErrInsuffBalance) {
 			return ErrInsuffBalance
 		}
 		return err
