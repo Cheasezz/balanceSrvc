@@ -5,8 +5,8 @@ import (
 
 	"github.com/Cheasezz/balanceSrvc/config"
 	"github.com/Cheasezz/balanceSrvc/internal/adapter/postgres"
-	trxtyperegistry "github.com/Cheasezz/balanceSrvc/internal/app/trxTypeRegistry"
 	grpcSrv "github.com/Cheasezz/balanceSrvc/internal/grpc"
+	trxtyperegistry "github.com/Cheasezz/balanceSrvc/internal/pkg/trxTypeRegistry"
 	"github.com/Cheasezz/balanceSrvc/internal/service"
 	"github.com/Cheasezz/balanceSrvc/pkg/logger"
 	"github.com/Cheasezz/balanceSrvc/pkg/pgx5"

@@ -5,8 +5,8 @@ import (
 	"errors"
 
 	"github.com/Cheasezz/balanceSrvc/internal/adapter/postgres"
-	trxtyperegistry "github.com/Cheasezz/balanceSrvc/internal/app/trxTypeRegistry"
 	"github.com/Cheasezz/balanceSrvc/internal/core"
+	trxtyperegistry "github.com/Cheasezz/balanceSrvc/internal/pkg/trxTypeRegistry"
 	"github.com/Cheasezz/balanceSrvc/pkg/logger"
 	blnc "github.com/Cheasezz/balanceSrvc/protos/gen"
 	"github.com/google/uuid"
