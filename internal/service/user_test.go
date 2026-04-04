@@ -7,8 +7,8 @@ import (
 
 	"github.com/Cheasezz/balanceSrvc/internal/adapter/postgres"
 	repoMock "github.com/Cheasezz/balanceSrvc/internal/adapter/postgres/mocks"
+	trxtyperegistry "github.com/Cheasezz/balanceSrvc/internal/adapter/trxTypeRegistry"
 	"github.com/Cheasezz/balanceSrvc/internal/core"
-	trxtyperegistry "github.com/Cheasezz/balanceSrvc/internal/pkg/trxTypeRegistry"
 	"github.com/Cheasezz/balanceSrvc/internal/service"
 	"github.com/Cheasezz/balanceSrvc/pkg/logger"
 	blnc "github.com/Cheasezz/balanceSrvc/protos/gen"

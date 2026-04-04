@@ -5,7 +5,7 @@ import (
 	"errors"
 
 	"github.com/Cheasezz/balanceSrvc/internal/adapter/postgres"
-	trxtyperegistry "github.com/Cheasezz/balanceSrvc/internal/pkg/trxTypeRegistry"
+	trxtyperegistry "github.com/Cheasezz/balanceSrvc/internal/adapter/trxTypeRegistry"
 	"github.com/Cheasezz/balanceSrvc/internal/core"
 	"github.com/Cheasezz/balanceSrvc/pkg/logger"
 	blnc "github.com/Cheasezz/balanceSrvc/protos/gen"
