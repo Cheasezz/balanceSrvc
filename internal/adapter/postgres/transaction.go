@@ -5,18 +5,17 @@ import (
 	"fmt"
 
 	"github.com/Cheasezz/balanceSrvc/internal/core"
-	"github.com/Cheasezz/balanceSrvc/pkg/pgx5"
 )
 
-type trxRepo struct {
-	db *pgx5.Pgx
-}
+// type trxRepo struct {
+// 	db *pgx5.Pgx
+// }
 
-func newTrxRepo(db *pgx5.Pgx) *trxRepo {
-	return &trxRepo{db}
-}
+// func newTrxRepo(db *pgx5.Pgx) *trxRepo {
+// 	return &trxRepo{db}
+// }
 
-func (r *trxRepo) GetAllTypesInfo(ctx context.Context) (map[string]*core.TrxType, error) {
+func (r *Postgres) GetAllTypesInfo(ctx context.Context) (map[string]*core.TrxType, error) {
 	const op = "trxrepo.GetAllTypesInfo"
 
 	query := fmt.Sprintf("SELECT * from %s", trxTypesTable)

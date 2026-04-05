@@ -5,18 +5,17 @@ import (
 	"fmt"
 
 	"github.com/Cheasezz/balanceSrvc/internal/core"
-	"github.com/Cheasezz/balanceSrvc/pkg/pgx5"
 )
 
-type systemRepo struct {
-	db *pgx5.Pgx
-}
+// type systemRepo struct {
+// 	db *pgx5.Pgx
+// }
 
-func newSystemRepo(db *pgx5.Pgx) *systemRepo {
-	return &systemRepo{db}
-}
+// func newSystemRepo(db *pgx5.Pgx) *systemRepo {
+// 	return &systemRepo{db}
+// }
 
-func (r *systemRepo) TransactionTo(ctx context.Context, trx *core.Transaction) error {
+func (r *Postgres) TransactionTo(ctx context.Context, trx *core.Transaction) error {
 	const op = "systemrepo.TransactionTo"
 
 	tx, err := r.db.Pool.Begin(ctx)
@@ -49,7 +48,7 @@ func (r *systemRepo) TransactionTo(ctx context.Context, trx *core.Transaction) e
 	return nil
 }
 
-func (r *systemRepo) TransactionFrom(ctx context.Context, trx *core.Transaction) error {
+func (r *Postgres) TransactionFrom(ctx context.Context, trx *core.Transaction) error {
 	const op = "systemrepo.TransactionFrom"
 
 	tx, err := r.db.Pool.Begin(ctx)

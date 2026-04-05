@@ -24,15 +24,9 @@ func TestSystemService_TransactionTo(t *testing.T) {
 
 	l := new(logger.LoggerMock)
 	system := new(repoMock.System)
-	trx := new(repoMock.Trx)
-	rp := &postgres.Postgres{
-		System: system,
-		Trx:    trx,
-	}
-
 	rg := new(trxtyperegistry.RegisterMock)
 
-	sysSrvc := service.NewSystemSrvc(l, rp, rg)
+	sysSrvc := service.NewSystemSrvc(l, system, rg)
 
 	tests := []struct {
 		name             string
@@ -180,7 +174,7 @@ func TestSystemService_TransactionTo(t *testing.T) {
 
 			require.Equal(t, tt.wantErr, err)
 
-			mock.AssertExpectationsForObjects(t, l, system, trx, rg)
+			mock.AssertExpectationsForObjects(t, l, system, rg)
 
 			for _, c := range calls {
 				c.Unset()
@@ -195,15 +189,9 @@ func TestSystemService_TransactionFrom(t *testing.T) {
 
 	l := new(logger.LoggerMock)
 	system := new(repoMock.System)
-	trx := new(repoMock.Trx)
-	rp := &postgres.Postgres{
-		System: system,
-		Trx:    trx,
-	}
-
 	rg := new(trxtyperegistry.RegisterMock)
 
-	sysSrvc := service.NewSystemSrvc(l, rp, rg)
+	sysSrvc := service.NewSystemSrvc(l, system, rg)
 
 	tests := []struct {
 		name             string
@@ -368,7 +356,7 @@ func TestSystemService_TransactionFrom(t *testing.T) {
 
 			require.Equal(t, tt.wantErr, err)
 
-			mock.AssertExpectationsForObjects(t, l, system, trx, rg)
+			mock.AssertExpectationsForObjects(t, l, system, rg)
 
 			for _, c := range calls {
 				c.Unset()

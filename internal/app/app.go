@@ -30,7 +30,7 @@ func New(l logger.Logger, cfg *config.Config) *App {
 
 	postgres := postgres.New(db)
 
-	dbTrxTypes, err := postgres.Trx.GetAllTypesInfo(context.Background())
+	dbTrxTypes, err := postgres.GetAllTypesInfo(context.Background())
 	if err != nil {
 		log.Error(err.Error())
 		panic("can't collect db transaction types")

@@ -8,6 +8,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+// TODO: Мапить ошибки и код, а не статус целиком.
 func toStatus(err error) error {
 	switch {
 	case errors.Is(err, core.ErrUnknownTrxType):

@@ -12,13 +12,18 @@ import (
 	"github.com/google/uuid"
 )
 
+type PgUser interface {
+	TransactionToUser(c context.Context, trx *core.Transaction) error
+	Balance(c context.Context, userId uuid.UUID) (uint64, error)
+}
+
 type userSrvc struct {
 	log logger.Logger
-	pg  *postgres.Postgres
+	pg  PgUser
 	rg  trxTypeRegistry
 }
 
-func NewUserSrvc(l logger.Logger, db *postgres.Postgres, tr trxTypeRegistry) *userSrvc {
+func NewUserSrvc(l logger.Logger, db PgUser, tr trxTypeRegistry) *userSrvc {
 	return &userSrvc{l, db, tr}
 }
 
@@ -44,7 +49,7 @@ func (s *userSrvc) TransactionToUser(ctx context.Context, input dto.UserTrxInput
 		return err
 	}
 
-	err = s.pg.User.TransactionToUser(ctx, trxInfo)
+	err = s.pg.TransactionToUser(ctx, trxInfo)
 	if err != nil {
 		log.Error("failed postgres method", "err", err)
 		if errors.Is(err, postgres.ErrInsuffBalance) {
@@ -64,7 +69,7 @@ func (s *userSrvc) Balance(ctx context.Context, userId string) (uint64, error) {
 		return 0, core.ErrInvalidUuid
 	}
 
-	balance, err := s.pg.User.Balance(ctx, id)
+	balance, err := s.pg.Balance(ctx, id)
 	if err != nil {
 		log.Error("Cant get user balance", "err", err)
 		if errors.Is(err, postgres.ErrIdNotfound) {

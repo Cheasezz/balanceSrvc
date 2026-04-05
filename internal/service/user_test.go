@@ -22,18 +22,10 @@ func TestUserService_TransactionToUser(t *testing.T) {
 	const op = "usersrvc.TransactionToUser"
 
 	l := new(logger.LoggerMock)
-	system := new(repoMock.System)
 	user := new(repoMock.User)
-	trx := new(repoMock.Trx)
-	rp := &postgres.Postgres{
-		System: system,
-		User:   user,
-		Trx:    trx,
-	}
-
 	rg := new(trxtyperegistry.RegisterMock)
+	usrSrvc := service.NewUserSrvc(l, user, rg)
 
-	usrSrvc := service.NewUserSrvc(l, rp, rg)
 	u := uuid.NewString()
 	tests := []struct {
 		name             string
@@ -190,7 +182,7 @@ func TestUserService_TransactionToUser(t *testing.T) {
 
 			require.Equal(t, tt.wantErr, err)
 
-			mock.AssertExpectationsForObjects(t, l, system, trx, rg)
+			mock.AssertExpectationsForObjects(t, l, rg)
 
 			for _, c := range calls {
 				c.Unset()
@@ -204,18 +196,10 @@ func TestUserService_Balance(t *testing.T) {
 	const op = "usersrvc.Balance"
 
 	l := new(logger.LoggerMock)
-	system := new(repoMock.System)
 	user := new(repoMock.User)
-	trx := new(repoMock.Trx)
-	rp := &postgres.Postgres{
-		System: system,
-		User:   user,
-		Trx:    trx,
-	}
-
 	rg := new(trxtyperegistry.RegisterMock)
+	usrSrvc := service.NewUserSrvc(l, user, rg)
 
-	usrSrvc := service.NewUserSrvc(l, rp, rg)
 	tests := []struct {
 		name         string
 		userId       string
@@ -274,7 +258,7 @@ func TestUserService_Balance(t *testing.T) {
 
 			require.Equal(t, tt.wantErr, err)
 
-			mock.AssertExpectationsForObjects(t, l, system, trx, rg)
+			mock.AssertExpectationsForObjects(t, l, rg)
 
 			for _, c := range calls {
 				c.Unset()

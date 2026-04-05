@@ -6,20 +6,19 @@ import (
 	"fmt"
 
 	"github.com/Cheasezz/balanceSrvc/internal/core"
-	"github.com/Cheasezz/balanceSrvc/pkg/pgx5"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 )
 
-type userRepo struct {
-	db *pgx5.Pgx
-}
+// type userRepo struct {
+// 	db *pgx5.Pgx
+// }
 
-func newUserRepo(db *pgx5.Pgx) *userRepo {
-	return &userRepo{db}
-}
+// func newUserRepo(db *pgx5.Pgx) *userRepo {
+// 	return &userRepo{db}
+// }
 
-func (r *userRepo) TransactionToUser(ctx context.Context, trx *core.Transaction) error {
+func (r *Postgres) TransactionToUser(ctx context.Context, trx *core.Transaction) error {
 	const op = "userrepo.TransactionToUser"
 
 	tx, err := r.db.Pool.Begin(ctx)
@@ -63,7 +62,7 @@ func (r *userRepo) TransactionToUser(ctx context.Context, trx *core.Transaction)
 	return nil
 }
 
-func (r *userRepo) Balance(ctx context.Context, userId uuid.UUID) (uint64, error) {
+func (r *Postgres) Balance(ctx context.Context, userId uuid.UUID) (uint64, error) {
 	const op = "userrepo.Balance"
 	var balance uint64
 

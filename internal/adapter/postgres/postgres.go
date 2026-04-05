@@ -1,32 +1,27 @@
 package postgres
 
 import (
-	"context"
 	"errors"
 
-	"github.com/Cheasezz/balanceSrvc/internal/core"
 	"github.com/Cheasezz/balanceSrvc/pkg/pgx5"
-	"github.com/google/uuid"
 )
 
-type System interface {
-	TransactionTo(c context.Context, trx *core.Transaction) error
-	TransactionFrom(c context.Context, trx *core.Transaction) error
-}
+// type System interface {
+// 	TransactionTo(c context.Context, trx *core.Transaction) error
+// 	TransactionFrom(c context.Context, trx *core.Transaction) error
+// }
 
-type User interface {
-	TransactionToUser(c context.Context, trx *core.Transaction) error
-	Balance(c context.Context, userId uuid.UUID) (uint64, error)
-}
+// type User interface {
+// 	TransactionToUser(c context.Context, trx *core.Transaction) error
+// 	Balance(c context.Context, userId uuid.UUID) (uint64, error)
+// }
 
-type Transaction interface {
-	GetAllTypesInfo(ctx context.Context) (map[string]*core.TrxType, error)
-}
+// type Transaction interface {
+// 	GetAllTypesInfo(ctx context.Context) (map[string]*core.TrxType, error)
+// }
 
 type Postgres struct {
-	System System
-	User   User
-	Trx    Transaction
+	db *pgx5.Pgx
 }
 
 const (
@@ -41,9 +36,5 @@ var (
 )
 
 func New(db *pgx5.Pgx) *Postgres {
-	return &Postgres{
-		System: newSystemRepo(db),
-		User:   newUserRepo(db),
-		Trx:    newTrxRepo(db),
-	}
+	return &Postgres{db}
 }
