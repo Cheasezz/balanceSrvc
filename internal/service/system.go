@@ -40,9 +40,6 @@ func (s *systemSrvc) TransactionTo(ctx context.Context, input dto.SystemTrxInput
 	trxInfo, err := core.NewSystemToUserTrx(tType, input.UserId, input.Amount)
 	if err != nil {
 		log.Error("failed to create new systemToUser transaction", "err", err)
-		// if errors.Is(err, core.ErrDisabledType) {
-		// 	return ErrSystemTrxTypeDisabled
-		// }
 		return err
 	}
 
@@ -73,9 +70,6 @@ func (s *systemSrvc) TransactionFrom(ctx context.Context, input dto.SystemTrxInp
 	trxInfo, err := core.NewSystemFromUserTrx(tType, input.UserId, input.Amount)
 	if err != nil {
 		log.Error("failed to create new systemFromUser transaction", "err", err)
-		// if errors.Is(err, core.ErrDisabledType) {
-		// 	return ErrSystemTrxTypeDisabled
-		// }
 		return err
 	}
 
