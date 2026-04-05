@@ -9,10 +9,6 @@ import (
 	"github.com/Cheasezz/balanceSrvc/pkg/logger"
 )
 
-var (
-// ErrInsuffBalance = errors.New("insufficient balance")
-)
-
 type System interface {
 	TransactionTo(ctx context.Context, input dto.SystemTrxInput) error
 	TransactionFrom(ctx context.Context, input dto.SystemTrxInput) error

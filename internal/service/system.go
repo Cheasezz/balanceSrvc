@@ -11,12 +11,6 @@ import (
 	"github.com/Cheasezz/balanceSrvc/pkg/logger"
 )
 
-var (
-// ErrSystemTrxToType       = errors.New("unknow system transaction(to) type")
-// ErrSystemTrxFromType     = errors.New("unknow system transaction(from) type")
-// ErrSystemTrxTypeDisabled = errors.New("this type is disabled")
-)
-
 type systemSrvc struct {
 	log logger.Logger
 	pg  *postgres.Postgres

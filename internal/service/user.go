@@ -12,13 +12,6 @@ import (
 	"github.com/google/uuid"
 )
 
-var (
-// ErrUsrTrxType          = errors.New("unknow user transaction type")
-// ErrUserTrxTypeDisabled = errors.New("this type is disabled")
-// ErrSameIds             = errors.New("Ids must be not equal")
-// ErrIdNotfound          = errors.New("id not found")
-)
-
 type userSrvc struct {
 	log logger.Logger
 	pg  *postgres.Postgres

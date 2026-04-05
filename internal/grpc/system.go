@@ -16,14 +16,6 @@ func (s *ServerAPI) SystemTransactionTo(
 	req *blnc.SystemTrxToRequest,
 ) (*blnc.SystemTrxResponse, error) {
 
-	// id, err := uuid.Parse(req.GetUserId())
-	// if err != nil {
-	// 	return nil, status.Error(codes.InvalidArgument, ErrInvalidUuid.Error())
-	// }
-
-	// if req.GetAmount() == 0 {
-	// 	return nil, status.Error(codes.InvalidArgument, ErrInvalidAmount.Error())
-	// }
 	input := dto.SystemTrxInput{
 		UserId:  req.GetUserId(),
 		Amount:  req.GetAmount(),
