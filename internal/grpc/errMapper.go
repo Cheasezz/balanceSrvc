@@ -8,28 +8,31 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// TODO: Мапить ошибки и код, а не статус целиком.
 func toStatus(err error) error {
+	var code codes.Code
+
 	switch {
 	case errors.Is(err, core.ErrUnknownTrxType):
-		return status.Error(codes.InvalidArgument, err.Error())
+		code = codes.InvalidArgument
 	case errors.Is(err, core.ErrDisabledType):
-		return status.Error(codes.InvalidArgument, err.Error())
+		code = codes.InvalidArgument
 	case errors.Is(err, core.ErrInvalidAmount):
-		return status.Error(codes.InvalidArgument, err.Error())
+		code = codes.InvalidArgument
 	case errors.Is(err, core.ErrInsuffBalance):
-		return status.Error(codes.InvalidArgument, err.Error())
+		code = codes.InvalidArgument
 	case errors.Is(err, core.ErrInvalidUuid):
-		return status.Error(codes.InvalidArgument, err.Error())
+		code = codes.InvalidArgument
 	case errors.Is(err, core.ErrSameIds):
-		return status.Error(codes.InvalidArgument, err.Error())
+		code = codes.InvalidArgument
 	case errors.Is(err, core.ErrIdNotfound):
-		return status.Error(codes.NotFound, err.Error())
+		code = codes.NotFound
 	case errors.Is(err, core.ErrInvalidIdempotencyKey):
-		return status.Error(codes.InvalidArgument, err.Error())
+		code = codes.InvalidArgument
 	case errors.Is(err, core.ErrRequestInProcess):
-		return status.Error(codes.AlreadyExists, err.Error())
+		code = codes.AlreadyExists
 	default:
 		return status.Error(codes.Internal, core.ErrInternalServer.Error())
 	}
+
+	return status.Error(code, err.Error())
 }
