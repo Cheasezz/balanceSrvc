@@ -52,17 +52,18 @@ func NewSystemFromUserTrx(trxType *TrxType, idempKey, userId string, amount uint
 	}, nil
 }
 
-func NewUserToUserTrx(trxType *TrxType, sender, resipient string, amount uint64) (*Transaction, error) {
-	send, resip, err := usrValid(trxType, sender, resipient, amount)
+func NewUserToUserTrx(trxType *TrxType, idempKey, sender, resipient string, amount uint64) (*Transaction, error) {
+	iKey, send, resip, err := usrValid(trxType, idempKey, sender, resipient, amount)
 	if err != nil {
 		return nil, err
 	}
 
 	return &Transaction{
-		Sender_id:    send,
-		Resipient_id: resip,
-		Type_id:      trxType.Id,
-		Amount:       amount,
+		Idempotency_key: iKey,
+		Sender_id:       send,
+		Resipient_id:    resip,
+		Type_id:         trxType.Id,
+		Amount:          amount,
 	}, nil
 }
 
@@ -93,33 +94,38 @@ func sysValid(trxType *TrxType, idempKey, userId string, amount uint64) (uuid.UU
 	return id, iKey, nil
 }
 
-func usrValid(trxType *TrxType, sender, resipient string, amount uint64) (uuid.UUID, uuid.UUID, error) {
+func usrValid(trxType *TrxType, idempKey, sender, resipient string, amount uint64) (uuid.UUID, uuid.UUID, uuid.UUID, error) {
 	emptyVal := uuid.UUID{}
 
 	if !trxType.Enable {
-		return emptyVal, emptyVal, ErrDisabledType
+		return emptyVal, emptyVal, emptyVal, ErrDisabledType
 	}
 
 	if trxType.Category != "user" {
-		return emptyVal, emptyVal, ErrInvalidTrxCategory
+		return emptyVal, emptyVal, emptyVal, ErrInvalidTrxCategory
 	}
 
 	send, err := uuid.Parse(sender)
 	if err != nil {
-		return emptyVal, emptyVal, ErrInvalidUuid
+		return emptyVal, emptyVal, emptyVal, ErrInvalidUuid
 	}
 
 	resip, err := uuid.Parse(resipient)
 	if err != nil {
-		return emptyVal, emptyVal, ErrInvalidUuid
+		return emptyVal, emptyVal, emptyVal, ErrInvalidUuid
+	}
+
+	iKey, err := uuid.Parse(idempKey)
+	if err != nil {
+		return emptyVal, emptyVal, emptyVal, ErrInvalidIdempotencyKey
 	}
 
 	if sender == resipient {
-		return emptyVal, emptyVal, ErrSameIds
+		return emptyVal, emptyVal, emptyVal, ErrSameIds
 	}
 
 	if amount <= 0 {
-		return emptyVal, emptyVal, ErrInvalidAmount
+		return emptyVal, emptyVal, emptyVal, ErrInvalidAmount
 	}
-	return send, resip, nil
+	return iKey, send, resip, nil
 }

@@ -28,7 +28,6 @@ func NewUserSrvc(l logger.Logger, db PgUser, tr trxTypeRegistry) *userSrvc {
 }
 
 func (s *userSrvc) TransactionToUser(ctx context.Context, input dto.UserTrxInput) error {
-
 	const op = "usersrvc.TransactionToUser"
 	log := s.log.With("op", op)
 
@@ -43,7 +42,7 @@ func (s *userSrvc) TransactionToUser(ctx context.Context, input dto.UserTrxInput
 		return err
 	}
 
-	trxInfo, err := core.NewUserToUserTrx(tType, input.Sender, input.Resipient, input.Amount)
+	trxInfo, err := core.NewUserToUserTrx(tType, input.IdempotencyKey, input.Sender, input.Resipient, input.Amount)
 	if err != nil {
 		log.Error("failed to create new UserToUser transaction", "err", err)
 		return err
@@ -54,6 +53,9 @@ func (s *userSrvc) TransactionToUser(ctx context.Context, input dto.UserTrxInput
 		log.Error("failed postgres method", "err", err)
 		if errors.Is(err, postgres.ErrInsuffBalance) {
 			return core.ErrInsuffBalance
+		}
+		if errors.Is(err, postgres.ErrIdempotencyKey) {
+			return core.ErrRequestInProcess
 		}
 		return err
 	}

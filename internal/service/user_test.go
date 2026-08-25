@@ -37,10 +37,11 @@ func TestUserService_TransactionToUser(t *testing.T) {
 		{
 			name: "happy path",
 			input: dto.UserTrxInput{
-				Sender:    uuid.NewString(),
-				Resipient: uuid.NewString(),
-				Amount:    10000,
-				TrxType:   1,
+				IdempotencyKey: uuid.NewString(),
+				Sender:         uuid.NewString(),
+				Resipient:      uuid.NewString(),
+				Amount:         10000,
+				TrxType:        1,
 			},
 			rgstyTrxTypeInfo: &core.TrxType{Category: "user", Enable: true},
 			mockBehavior: func(trxTInfo *core.TrxType) []*mock.Call {
@@ -54,10 +55,11 @@ func TestUserService_TransactionToUser(t *testing.T) {
 		{
 			name: "uncorrect transaction type",
 			input: dto.UserTrxInput{
-				Sender:    uuid.NewString(),
-				Resipient: uuid.NewString(),
-				Amount:    10000,
-				TrxType:   0,
+				IdempotencyKey: uuid.NewString(),
+				Sender:         uuid.NewString(),
+				Resipient:      uuid.NewString(),
+				Amount:         10000,
+				TrxType:        0,
 			},
 			rgstyTrxTypeInfo: &core.TrxType{},
 			mockBehavior: func(trxTInfo *core.TrxType) []*mock.Call {
@@ -71,10 +73,11 @@ func TestUserService_TransactionToUser(t *testing.T) {
 		{
 			name: "unexpected error from registry",
 			input: dto.UserTrxInput{
-				Sender:    uuid.NewString(),
-				Resipient: uuid.NewString(),
-				Amount:    10000,
-				TrxType:   1,
+				IdempotencyKey: uuid.NewString(),
+				Sender:         uuid.NewString(),
+				Resipient:      uuid.NewString(),
+				Amount:         10000,
+				TrxType:        1,
 			},
 			rgstyTrxTypeInfo: &core.TrxType{},
 			mockBehavior: func(trxTInfo *core.TrxType) []*mock.Call {
@@ -88,10 +91,11 @@ func TestUserService_TransactionToUser(t *testing.T) {
 		{
 			name: "error transaction type is disabled",
 			input: dto.UserTrxInput{
-				Sender:    uuid.NewString(),
-				Resipient: uuid.NewString(),
-				Amount:    10000,
-				TrxType:   1,
+				IdempotencyKey: uuid.NewString(),
+				Sender:         uuid.NewString(),
+				Resipient:      uuid.NewString(),
+				Amount:         10000,
+				TrxType:        1,
 			},
 			rgstyTrxTypeInfo: &core.TrxType{Category: "user", Enable: false},
 			mockBehavior: func(trxTInfo *core.TrxType) []*mock.Call {
@@ -105,10 +109,11 @@ func TestUserService_TransactionToUser(t *testing.T) {
 		{
 			name: "error same ids",
 			input: dto.UserTrxInput{
-				Sender:    u,
-				Resipient: u,
-				Amount:    10000,
-				TrxType:   1,
+				IdempotencyKey: uuid.NewString(),
+				Sender:         u,
+				Resipient:      u,
+				Amount:         10000,
+				TrxType:        1,
 			},
 			rgstyTrxTypeInfo: &core.TrxType{Category: "user", Enable: true},
 			mockBehavior: func(trxTInfo *core.TrxType) []*mock.Call {
@@ -122,10 +127,11 @@ func TestUserService_TransactionToUser(t *testing.T) {
 		{
 			name: "error transaction category not 'user'",
 			input: dto.UserTrxInput{
-				Sender:    uuid.NewString(),
-				Resipient: uuid.NewString(),
-				Amount:    10000,
-				TrxType:   1,
+				IdempotencyKey: uuid.NewString(),
+				Sender:         uuid.NewString(),
+				Resipient:      uuid.NewString(),
+				Amount:         10000,
+				TrxType:        1,
 			},
 			rgstyTrxTypeInfo: &core.TrxType{Category: "system", Enable: true},
 			mockBehavior: func(trxTInfo *core.TrxType) []*mock.Call {
@@ -139,10 +145,11 @@ func TestUserService_TransactionToUser(t *testing.T) {
 		{
 			name: "error insufficient balance db method TransactionToUser",
 			input: dto.UserTrxInput{
-				Sender:    uuid.NewString(),
-				Resipient: uuid.NewString(),
-				Amount:    10000,
-				TrxType:   1,
+				IdempotencyKey: uuid.NewString(),
+				Sender:         uuid.NewString(),
+				Resipient:      uuid.NewString(),
+				Amount:         10000,
+				TrxType:        1,
 			},
 			rgstyTrxTypeInfo: &core.TrxType{Category: "user", Enable: true},
 			mockBehavior: func(trxTInfo *core.TrxType) []*mock.Call {
@@ -157,10 +164,11 @@ func TestUserService_TransactionToUser(t *testing.T) {
 		{
 			name: "error when call db method TransactionToUser",
 			input: dto.UserTrxInput{
-				Sender:    uuid.NewString(),
-				Resipient: uuid.NewString(),
-				Amount:    10000,
-				TrxType:   1,
+				IdempotencyKey: uuid.NewString(),
+				Sender:         uuid.NewString(),
+				Resipient:      uuid.NewString(),
+				Amount:         10000,
+				TrxType:        1,
 			},
 			rgstyTrxTypeInfo: &core.TrxType{Category: "user", Enable: true},
 			mockBehavior: func(trxTInfo *core.TrxType) []*mock.Call {
@@ -171,6 +179,43 @@ func TestUserService_TransactionToUser(t *testing.T) {
 				return []*mock.Call{c1, c2, c3, c4}
 			},
 			wantErr: errors.New("err"),
+		},
+		{
+			name: "error bad idempotency key",
+			input: dto.UserTrxInput{
+				IdempotencyKey: "bad idempotency key",
+				Sender:         uuid.NewString(),
+				Resipient:      uuid.NewString(),
+				Amount:         10000,
+				TrxType:        1,
+			},
+			rgstyTrxTypeInfo: &core.TrxType{Category: "user", Enable: true},
+			mockBehavior: func(trxTInfo *core.TrxType) []*mock.Call {
+				c1 := l.On("With", "op", op).Return(l)
+				c2 := rg.On("UserType", mock.Anything).Return(trxTInfo, nil)
+				c3 := l.On("Error", mock.Anything, mock.Anything, mock.Anything)
+				return []*mock.Call{c1, c2, c3}
+			},
+			wantErr: core.ErrInvalidIdempotencyKey,
+		},
+		{
+			name: "error request in process",
+			input: dto.UserTrxInput{
+				IdempotencyKey: uuid.NewString(),
+				Sender:         uuid.NewString(),
+				Resipient:      uuid.NewString(),
+				Amount:         10000,
+				TrxType:        1,
+			},
+			rgstyTrxTypeInfo: &core.TrxType{Category: "user", Enable: true},
+			mockBehavior: func(trxTInfo *core.TrxType) []*mock.Call {
+				c1 := l.On("With", "op", op).Return(l)
+				c2 := rg.On("UserType", mock.Anything).Return(trxTInfo, nil)
+				c3 := user.On("TransactionToUser", mock.Anything, mock.Anything).Return(postgres.ErrIdempotencyKey)
+				c4 := l.On("Error", mock.Anything, mock.Anything, mock.Anything)
+				return []*mock.Call{c1, c2, c3, c4}
+			},
+			wantErr: core.ErrRequestInProcess,
 		},
 	}
 

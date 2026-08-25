@@ -1,8 +1,9 @@
 package dto
 
 type UserTrxInput struct {
-	Sender    string
-	Resipient string
-	Amount    uint64
-	TrxType   int32
+	IdempotencyKey string
+	Sender         string
+	Resipient      string
+	Amount         uint64
+	TrxType        int32
 }

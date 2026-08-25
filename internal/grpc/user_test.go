@@ -41,10 +41,11 @@ func TestUserHandler_TransactionToUser(t *testing.T) {
 		{
 			name: "happy path",
 			req: &blnc.UserTrxRequest{
-				SenderId:    uuid.NewString(),
-				ResipientId: uuid.NewString(),
-				UserTrxType: blnc.UserTrxType_USER_TRX_TYPE_TRANSFER,
-				Amount:      10000,
+				IdempotencyKey: uuid.NewString(),
+				SenderId:       uuid.NewString(),
+				ResipientId:    uuid.NewString(),
+				UserTrxType:    blnc.UserTrxType_USER_TRX_TYPE_TRANSFER,
+				Amount:         10000,
 			},
 			mockBehavior: func() []*mock.Call {
 				c1 := usrSrvc.On("TransactionToUser", mock.Anything, mock.Anything).Return(nil)
@@ -56,10 +57,11 @@ func TestUserHandler_TransactionToUser(t *testing.T) {
 		{
 			name: "error sender bad uuid",
 			req: &blnc.UserTrxRequest{
-				SenderId:    "baaaad uuid",
-				ResipientId: uuid.NewString(),
-				UserTrxType: blnc.UserTrxType_USER_TRX_TYPE_TRANSFER,
-				Amount:      10000,
+				IdempotencyKey: uuid.NewString(),
+				SenderId:       "baaaad uuid",
+				ResipientId:    uuid.NewString(),
+				UserTrxType:    blnc.UserTrxType_USER_TRX_TYPE_TRANSFER,
+				Amount:         10000,
 			},
 			mockBehavior: func() []*mock.Call {
 				c1 := usrSrvc.On("TransactionToUser", mock.Anything, mock.Anything).Return(core.ErrInvalidUuid)
@@ -71,10 +73,11 @@ func TestUserHandler_TransactionToUser(t *testing.T) {
 		{
 			name: "error resipient bad uuid",
 			req: &blnc.UserTrxRequest{
-				SenderId:    uuid.NewString(),
-				ResipientId: "baaaad uuid",
-				UserTrxType: blnc.UserTrxType_USER_TRX_TYPE_TRANSFER,
-				Amount:      10000,
+				IdempotencyKey: uuid.NewString(),
+				SenderId:       uuid.NewString(),
+				ResipientId:    "baaaad uuid",
+				UserTrxType:    blnc.UserTrxType_USER_TRX_TYPE_TRANSFER,
+				Amount:         10000,
 			},
 			mockBehavior: func() []*mock.Call {
 				c1 := usrSrvc.On("TransactionToUser", mock.Anything, mock.Anything).Return(core.ErrInvalidUuid)
@@ -86,10 +89,11 @@ func TestUserHandler_TransactionToUser(t *testing.T) {
 		{
 			name: "error zero amount",
 			req: &blnc.UserTrxRequest{
-				SenderId:    uuid.NewString(),
-				ResipientId: uuid.NewString(),
-				UserTrxType: blnc.UserTrxType_USER_TRX_TYPE_TRANSFER,
-				Amount:      0,
+				IdempotencyKey: uuid.NewString(),
+				SenderId:       uuid.NewString(),
+				ResipientId:    uuid.NewString(),
+				UserTrxType:    blnc.UserTrxType_USER_TRX_TYPE_TRANSFER,
+				Amount:         0,
 			},
 			mockBehavior: func() []*mock.Call {
 				c1 := usrSrvc.On("TransactionToUser", mock.Anything, mock.Anything).Return(core.ErrInvalidAmount)
@@ -101,10 +105,11 @@ func TestUserHandler_TransactionToUser(t *testing.T) {
 		{
 			name: "error service check uncorrect transaction type",
 			req: &blnc.UserTrxRequest{
-				SenderId:    uuid.NewString(),
-				ResipientId: uuid.NewString(),
-				UserTrxType: blnc.UserTrxType_USER_TRX_TYPE_UNKNOWN,
-				Amount:      10000,
+				IdempotencyKey: uuid.NewString(),
+				SenderId:       uuid.NewString(),
+				ResipientId:    uuid.NewString(),
+				UserTrxType:    blnc.UserTrxType_USER_TRX_TYPE_UNKNOWN,
+				Amount:         10000,
 			},
 			mockBehavior: func() []*mock.Call {
 				c1 := usrSrvc.On("TransactionToUser", mock.Anything, mock.Anything).
@@ -117,10 +122,11 @@ func TestUserHandler_TransactionToUser(t *testing.T) {
 		{
 			name: "error service check disabled transaction type",
 			req: &blnc.UserTrxRequest{
-				SenderId:    uuid.NewString(),
-				ResipientId: uuid.NewString(),
-				UserTrxType: blnc.UserTrxType_USER_TRX_TYPE_TRANSFER,
-				Amount:      10000,
+				IdempotencyKey: uuid.NewString(),
+				SenderId:       uuid.NewString(),
+				ResipientId:    uuid.NewString(),
+				UserTrxType:    blnc.UserTrxType_USER_TRX_TYPE_TRANSFER,
+				Amount:         10000,
 			},
 			mockBehavior: func() []*mock.Call {
 				c1 := usrSrvc.On("TransactionToUser", mock.Anything, mock.Anything).
@@ -133,10 +139,11 @@ func TestUserHandler_TransactionToUser(t *testing.T) {
 		{
 			name: "error insufficient balance",
 			req: &blnc.UserTrxRequest{
-				SenderId:    uuid.NewString(),
-				ResipientId: uuid.NewString(),
-				UserTrxType: blnc.UserTrxType_USER_TRX_TYPE_TRANSFER,
-				Amount:      10000,
+				IdempotencyKey: uuid.NewString(),
+				SenderId:       uuid.NewString(),
+				ResipientId:    uuid.NewString(),
+				UserTrxType:    blnc.UserTrxType_USER_TRX_TYPE_TRANSFER,
+				Amount:         10000,
 			},
 			mockBehavior: func() []*mock.Call {
 				c1 := usrSrvc.On(
@@ -150,10 +157,11 @@ func TestUserHandler_TransactionToUser(t *testing.T) {
 		{
 			name: "error same ids",
 			req: &blnc.UserTrxRequest{
-				SenderId:    u,
-				ResipientId: u,
-				UserTrxType: blnc.UserTrxType_USER_TRX_TYPE_TRANSFER,
-				Amount:      10000,
+				IdempotencyKey: uuid.NewString(),
+				SenderId:       u,
+				ResipientId:    u,
+				UserTrxType:    blnc.UserTrxType_USER_TRX_TYPE_TRANSFER,
+				Amount:         10000,
 			},
 			mockBehavior: func() []*mock.Call {
 				c1 := usrSrvc.On(
@@ -167,10 +175,11 @@ func TestUserHandler_TransactionToUser(t *testing.T) {
 		{
 			name: "unexpected error service",
 			req: &blnc.UserTrxRequest{
-				SenderId:    u,
-				ResipientId: u,
-				UserTrxType: blnc.UserTrxType_USER_TRX_TYPE_TRANSFER,
-				Amount:      10000,
+				IdempotencyKey: uuid.NewString(),
+				SenderId:       u,
+				ResipientId:    u,
+				UserTrxType:    blnc.UserTrxType_USER_TRX_TYPE_TRANSFER,
+				Amount:         10000,
 			},
 			mockBehavior: func() []*mock.Call {
 				c1 := usrSrvc.On(
@@ -180,6 +189,38 @@ func TestUserHandler_TransactionToUser(t *testing.T) {
 			},
 			wantResp: nil,
 			wantErr:  status.Error(codes.Internal, core.ErrInternalServer.Error()),
+		},
+		{
+			name: "error bad idempotency key",
+			req: &blnc.UserTrxRequest{
+				IdempotencyKey: "bad idempotency key",
+				SenderId:       uuid.NewString(),
+				ResipientId:    uuid.NewString(),
+				UserTrxType:    blnc.UserTrxType_USER_TRX_TYPE_TRANSFER,
+				Amount:         10000,
+			},
+			mockBehavior: func() []*mock.Call {
+				c1 := usrSrvc.On("TransactionToUser", mock.Anything, mock.Anything).Return(core.ErrInvalidIdempotencyKey)
+				return []*mock.Call{c1}
+			},
+			wantResp: nil,
+			wantErr:  status.Error(codes.InvalidArgument, core.ErrInvalidIdempotencyKey.Error()),
+		},
+		{
+			name: "error request in process",
+			req: &blnc.UserTrxRequest{
+				IdempotencyKey: uuid.NewString(),
+				SenderId:       uuid.NewString(),
+				ResipientId:    uuid.NewString(),
+				UserTrxType:    blnc.UserTrxType_USER_TRX_TYPE_TRANSFER,
+				Amount:         10000,
+			},
+			mockBehavior: func() []*mock.Call {
+				c1 := usrSrvc.On("TransactionToUser", mock.Anything, mock.Anything).Return(core.ErrRequestInProcess)
+				return []*mock.Call{c1}
+			},
+			wantResp: nil,
+			wantErr:  status.Error(codes.AlreadyExists, core.ErrRequestInProcess.Error()),
 		},
 	}
 
