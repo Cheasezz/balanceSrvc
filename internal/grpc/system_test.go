@@ -41,9 +41,10 @@ func TestSystemHandler_TransactionTo(t *testing.T) {
 		{
 			name: "happy path",
 			req: &blnc.SystemTrxToRequest{
-				UserId:        "37166f7a-f430-49e9-8306-8fba9fbf4311",
-				SystemTrxType: blnc.SystemTrxToType_SYSTEM_TRX_TO_TYPE_DEPOSIT,
-				Amount:        10000,
+				IdempotencyKey: uuid.NewString(),
+				UserId:         uuid.NewString(),
+				SystemTrxType:  blnc.SystemTrxToType_SYSTEM_TRX_TO_TYPE_DEPOSIT,
+				Amount:         10000,
 			},
 			mockBehavior: func() []*mock.Call {
 				c1 := sysSrvc.On("TransactionTo", mock.Anything, mock.Anything).Return(nil)
@@ -55,9 +56,10 @@ func TestSystemHandler_TransactionTo(t *testing.T) {
 		{
 			name: "error bad uuid",
 			req: &blnc.SystemTrxToRequest{
-				UserId:        "baaaad uuid",
-				SystemTrxType: blnc.SystemTrxToType_SYSTEM_TRX_TO_TYPE_DEPOSIT,
-				Amount:        10000,
+				IdempotencyKey: uuid.NewString(),
+				UserId:         "baaaad uuid",
+				SystemTrxType:  blnc.SystemTrxToType_SYSTEM_TRX_TO_TYPE_DEPOSIT,
+				Amount:         10000,
 			},
 			mockBehavior: func() []*mock.Call {
 				c1 := sysSrvc.On("TransactionTo", mock.Anything, mock.Anything).
@@ -70,9 +72,10 @@ func TestSystemHandler_TransactionTo(t *testing.T) {
 		{
 			name: "error zero amount",
 			req: &blnc.SystemTrxToRequest{
-				UserId:        uuid.NewString(),
-				SystemTrxType: blnc.SystemTrxToType_SYSTEM_TRX_TO_TYPE_DEPOSIT,
-				Amount:        0,
+				IdempotencyKey: uuid.NewString(),
+				UserId:         uuid.NewString(),
+				SystemTrxType:  blnc.SystemTrxToType_SYSTEM_TRX_TO_TYPE_DEPOSIT,
+				Amount:         0,
 			},
 			mockBehavior: func() []*mock.Call {
 				c1 := sysSrvc.On("TransactionTo", mock.Anything, mock.Anything).Return(core.ErrInvalidAmount)
@@ -84,9 +87,10 @@ func TestSystemHandler_TransactionTo(t *testing.T) {
 		{
 			name: "error service check uncorrect transaction type",
 			req: &blnc.SystemTrxToRequest{
-				UserId:        uuid.NewString(),
-				SystemTrxType: blnc.SystemTrxToType_SYSTEM_TRX_TO_TYPE_UNKNOWN,
-				Amount:        10000,
+				IdempotencyKey: uuid.NewString(),
+				UserId:         uuid.NewString(),
+				SystemTrxType:  blnc.SystemTrxToType_SYSTEM_TRX_TO_TYPE_UNKNOWN,
+				Amount:         10000,
 			},
 			mockBehavior: func() []*mock.Call {
 				c1 := sysSrvc.On(
@@ -100,9 +104,10 @@ func TestSystemHandler_TransactionTo(t *testing.T) {
 		{
 			name: "error service check disabled transaction type",
 			req: &blnc.SystemTrxToRequest{
-				UserId:        uuid.NewString(),
-				SystemTrxType: blnc.SystemTrxToType_SYSTEM_TRX_TO_TYPE_DEPOSIT,
-				Amount:        10000,
+				IdempotencyKey: uuid.NewString(),
+				UserId:         uuid.NewString(),
+				SystemTrxType:  blnc.SystemTrxToType_SYSTEM_TRX_TO_TYPE_DEPOSIT,
+				Amount:         10000,
 			},
 			mockBehavior: func() []*mock.Call {
 				c1 := sysSrvc.On(
@@ -116,9 +121,10 @@ func TestSystemHandler_TransactionTo(t *testing.T) {
 		{
 			name: "unexpected error when check transaction type in service",
 			req: &blnc.SystemTrxToRequest{
-				UserId:        "37166f7a-f430-49e9-8306-8fba9fbf4311",
-				SystemTrxType: blnc.SystemTrxToType_SYSTEM_TRX_TO_TYPE_DEPOSIT,
-				Amount:        10000,
+				IdempotencyKey: uuid.NewString(),
+				UserId:         uuid.NewString(),
+				SystemTrxType:  blnc.SystemTrxToType_SYSTEM_TRX_TO_TYPE_DEPOSIT,
+				Amount:         10000,
 			},
 			mockBehavior: func() []*mock.Call {
 				c1 := sysSrvc.On(
@@ -128,6 +134,38 @@ func TestSystemHandler_TransactionTo(t *testing.T) {
 			},
 			wantResp: nil,
 			wantErr:  status.Error(codes.Internal, core.ErrInternalServer.Error()),
+		},
+		{
+			name: "error bad idempotency key",
+			req: &blnc.SystemTrxToRequest{
+				IdempotencyKey: "bad idempotency key",
+				UserId:         uuid.NewString(),
+				SystemTrxType:  blnc.SystemTrxToType_SYSTEM_TRX_TO_TYPE_DEPOSIT,
+				Amount:         10000,
+			},
+			mockBehavior: func() []*mock.Call {
+				c1 := sysSrvc.On("TransactionTo", mock.Anything, mock.Anything).
+					Return(core.ErrInvalidIdempotencyKey)
+				return []*mock.Call{c1}
+			},
+			wantResp: nil,
+			wantErr:  status.Error(codes.InvalidArgument, core.ErrInvalidIdempotencyKey.Error()),
+		},
+		{
+			name: "error request in process",
+			req: &blnc.SystemTrxToRequest{
+				IdempotencyKey: uuid.NewString(),
+				UserId:         uuid.NewString(),
+				SystemTrxType:  blnc.SystemTrxToType_SYSTEM_TRX_TO_TYPE_DEPOSIT,
+				Amount:         10000,
+			},
+			mockBehavior: func() []*mock.Call {
+				c1 := sysSrvc.On("TransactionTo", mock.Anything, mock.Anything).
+					Return(core.ErrRequestInProcess)
+				return []*mock.Call{c1}
+			},
+			wantResp: nil,
+			wantErr:  status.Error(codes.AlreadyExists, core.ErrRequestInProcess.Error()),
 		},
 	}
 
@@ -171,9 +209,10 @@ func TestSystemHandler_TransactionFrom(t *testing.T) {
 		{
 			name: "happy path",
 			req: &blnc.SystemTrxFromRequest{
-				UserId:        uuid.NewString(),
-				SystemTrxType: blnc.SystemTrxFromType_SYSTEM_TRX_FROM_TYPE_WITHDRAWAL,
-				Amount:        10000,
+				IdempotencyKey: uuid.NewString(),
+				UserId:         uuid.NewString(),
+				SystemTrxType:  blnc.SystemTrxFromType_SYSTEM_TRX_FROM_TYPE_WITHDRAWAL,
+				Amount:         10000,
 			},
 			mockBehavior: func() []*mock.Call {
 				c1 := sysSrvc.On("TransactionFrom", mock.Anything, mock.Anything).Return(nil)
@@ -185,9 +224,10 @@ func TestSystemHandler_TransactionFrom(t *testing.T) {
 		{
 			name: "error bad uuid",
 			req: &blnc.SystemTrxFromRequest{
-				UserId:        "baaaad uuid",
-				SystemTrxType: blnc.SystemTrxFromType_SYSTEM_TRX_FROM_TYPE_WITHDRAWAL,
-				Amount:        10000,
+				IdempotencyKey: uuid.NewString(),
+				UserId:         "baaaad uuid",
+				SystemTrxType:  blnc.SystemTrxFromType_SYSTEM_TRX_FROM_TYPE_WITHDRAWAL,
+				Amount:         10000,
 			},
 			mockBehavior: func() []*mock.Call {
 				c1 := sysSrvc.On("TransactionFrom", mock.Anything, mock.Anything).Return(core.ErrInvalidUuid)
@@ -199,9 +239,10 @@ func TestSystemHandler_TransactionFrom(t *testing.T) {
 		{
 			name: "error zero amount",
 			req: &blnc.SystemTrxFromRequest{
-				UserId:        uuid.NewString(),
-				SystemTrxType: blnc.SystemTrxFromType_SYSTEM_TRX_FROM_TYPE_WITHDRAWAL,
-				Amount:        0,
+				IdempotencyKey: uuid.NewString(),
+				UserId:         uuid.NewString(),
+				SystemTrxType:  blnc.SystemTrxFromType_SYSTEM_TRX_FROM_TYPE_WITHDRAWAL,
+				Amount:         0,
 			},
 			mockBehavior: func() []*mock.Call {
 				c1 := sysSrvc.On("TransactionFrom", mock.Anything, mock.Anything).Return(core.ErrInvalidAmount)
@@ -213,9 +254,10 @@ func TestSystemHandler_TransactionFrom(t *testing.T) {
 		{
 			name: "error service check uncorrect transaction type",
 			req: &blnc.SystemTrxFromRequest{
-				UserId:        uuid.NewString(),
-				SystemTrxType: blnc.SystemTrxFromType_SYSTEM_TRX_FROM_TYPE_WITHDRAWAL,
-				Amount:        10000,
+				IdempotencyKey: uuid.NewString(),
+				UserId:         uuid.NewString(),
+				SystemTrxType:  blnc.SystemTrxFromType_SYSTEM_TRX_FROM_TYPE_WITHDRAWAL,
+				Amount:         10000,
 			},
 			mockBehavior: func() []*mock.Call {
 				c1 := sysSrvc.On(
@@ -229,9 +271,10 @@ func TestSystemHandler_TransactionFrom(t *testing.T) {
 		{
 			name: "error service check disabled transaction type",
 			req: &blnc.SystemTrxFromRequest{
-				UserId:        uuid.NewString(),
-				SystemTrxType: blnc.SystemTrxFromType_SYSTEM_TRX_FROM_TYPE_WITHDRAWAL,
-				Amount:        10000,
+				IdempotencyKey: uuid.NewString(),
+				UserId:         uuid.NewString(),
+				SystemTrxType:  blnc.SystemTrxFromType_SYSTEM_TRX_FROM_TYPE_WITHDRAWAL,
+				Amount:         10000,
 			},
 			mockBehavior: func() []*mock.Call {
 				c1 := sysSrvc.On(
@@ -245,9 +288,10 @@ func TestSystemHandler_TransactionFrom(t *testing.T) {
 		{
 			name: "error service insufficient balance",
 			req: &blnc.SystemTrxFromRequest{
-				UserId:        uuid.NewString(),
-				SystemTrxType: blnc.SystemTrxFromType_SYSTEM_TRX_FROM_TYPE_WITHDRAWAL,
-				Amount:        10000,
+				IdempotencyKey: uuid.NewString(),
+				UserId:         uuid.NewString(),
+				SystemTrxType:  blnc.SystemTrxFromType_SYSTEM_TRX_FROM_TYPE_WITHDRAWAL,
+				Amount:         10000,
 			},
 			mockBehavior: func() []*mock.Call {
 				c1 := sysSrvc.On(
@@ -261,9 +305,10 @@ func TestSystemHandler_TransactionFrom(t *testing.T) {
 		{
 			name: "unexpected error when check transaction type in service",
 			req: &blnc.SystemTrxFromRequest{
-				UserId:        uuid.NewString(),
-				SystemTrxType: blnc.SystemTrxFromType_SYSTEM_TRX_FROM_TYPE_WITHDRAWAL,
-				Amount:        10000,
+				IdempotencyKey: uuid.NewString(),
+				UserId:         uuid.NewString(),
+				SystemTrxType:  blnc.SystemTrxFromType_SYSTEM_TRX_FROM_TYPE_WITHDRAWAL,
+				Amount:         10000,
 			},
 			mockBehavior: func() []*mock.Call {
 				c1 := sysSrvc.On(
@@ -273,6 +318,37 @@ func TestSystemHandler_TransactionFrom(t *testing.T) {
 			},
 			wantResp: nil,
 			wantErr:  status.Error(codes.Internal, core.ErrInternalServer.Error()),
+		},
+		{
+			name: "error bad idempotency key",
+			req: &blnc.SystemTrxFromRequest{
+				IdempotencyKey: "bad idempotency key",
+				UserId:         uuid.NewString(),
+				SystemTrxType:  blnc.SystemTrxFromType_SYSTEM_TRX_FROM_TYPE_WITHDRAWAL,
+				Amount:         10000,
+			},
+			mockBehavior: func() []*mock.Call {
+				c1 := sysSrvc.On("TransactionFrom", mock.Anything, mock.Anything).Return(core.ErrInvalidIdempotencyKey)
+				return []*mock.Call{c1}
+			},
+			wantResp: nil,
+			wantErr:  status.Error(codes.InvalidArgument, core.ErrInvalidIdempotencyKey.Error()),
+		},
+		{
+			name: "error request in process",
+			req: &blnc.SystemTrxFromRequest{
+				IdempotencyKey: uuid.NewString(),
+				UserId:         uuid.NewString(),
+				SystemTrxType:  blnc.SystemTrxFromType_SYSTEM_TRX_FROM_TYPE_WITHDRAWAL,
+				Amount:         10000,
+			},
+			mockBehavior: func() []*mock.Call {
+				c1 := sysSrvc.On("TransactionFrom", mock.Anything, mock.Anything).
+					Return(core.ErrRequestInProcess)
+				return []*mock.Call{c1}
+			},
+			wantResp: nil,
+			wantErr:  status.Error(codes.AlreadyExists, core.ErrRequestInProcess.Error()),
 		},
 	}
 

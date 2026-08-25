@@ -10,14 +10,6 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-// type userRepo struct {
-// 	db *pgx5.Pgx
-// }
-
-// func newUserRepo(db *pgx5.Pgx) *userRepo {
-// 	return &userRepo{db}
-// }
-
 func (r *Postgres) TransactionToUser(ctx context.Context, trx *core.Transaction) error {
 	const op = "userrepo.TransactionToUser"
 

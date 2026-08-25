@@ -25,6 +25,10 @@ func toStatus(err error) error {
 		return status.Error(codes.InvalidArgument, err.Error())
 	case errors.Is(err, core.ErrIdNotfound):
 		return status.Error(codes.NotFound, err.Error())
+	case errors.Is(err, core.ErrInvalidIdempotencyKey):
+		return status.Error(codes.InvalidArgument, err.Error())
+	case errors.Is(err, core.ErrRequestInProcess):
+		return status.Error(codes.AlreadyExists, err.Error())
 	default:
 		return status.Error(codes.Internal, core.ErrInternalServer.Error())
 	}

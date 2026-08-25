@@ -27,7 +27,6 @@ func NewSystemSrvc(l logger.Logger, db PgSystem, tr trxTypeRegistry) *systemSrvc
 }
 
 func (s *systemSrvc) TransactionTo(ctx context.Context, input dto.SystemTrxInput) error {
-
 	const op = "systemsrvc.TransactionTo"
 	log := s.log.With("op", op)
 
@@ -42,7 +41,7 @@ func (s *systemSrvc) TransactionTo(ctx context.Context, input dto.SystemTrxInput
 		return err
 	}
 
-	trxInfo, err := core.NewSystemToUserTrx(tType, input.UserId, input.Amount)
+	trxInfo, err := core.NewSystemToUserTrx(tType, input.IdempotencyKey, input.UserId, input.Amount)
 	if err != nil {
 		log.Error("failed to create new systemToUser transaction", "err", err)
 		return err
@@ -51,6 +50,9 @@ func (s *systemSrvc) TransactionTo(ctx context.Context, input dto.SystemTrxInput
 	err = s.pg.TransactionTo(ctx, trxInfo)
 	if err != nil {
 		log.Error("failed postgres method", "err", err)
+		if errors.Is(err, postgres.ErrIdempotencyKey) {
+			return core.ErrRequestInProcess
+		}
 		return err
 	}
 
@@ -58,7 +60,6 @@ func (s *systemSrvc) TransactionTo(ctx context.Context, input dto.SystemTrxInput
 }
 
 func (s *systemSrvc) TransactionFrom(ctx context.Context, input dto.SystemTrxInput) error {
-
 	const op = "systemsrvc.TransactionFrom"
 	log := s.log.With("op", op)
 
@@ -72,7 +73,7 @@ func (s *systemSrvc) TransactionFrom(ctx context.Context, input dto.SystemTrxInp
 		return err
 	}
 
-	trxInfo, err := core.NewSystemFromUserTrx(tType, input.UserId, input.Amount)
+	trxInfo, err := core.NewSystemFromUserTrx(tType, input.IdempotencyKey, input.UserId, input.Amount)
 	if err != nil {
 		log.Error("failed to create new systemFromUser transaction", "err", err)
 		return err
@@ -83,6 +84,9 @@ func (s *systemSrvc) TransactionFrom(ctx context.Context, input dto.SystemTrxInp
 		log.Error("failed postgres method", "err", err)
 		if errors.Is(err, postgres.ErrInsuffBalance) {
 			return core.ErrInsuffBalance
+		}
+		if errors.Is(err, postgres.ErrIdempotencyKey) {
+			return core.ErrRequestInProcess
 		}
 		return err
 	}

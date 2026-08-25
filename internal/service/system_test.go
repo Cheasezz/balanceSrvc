@@ -38,9 +38,10 @@ func TestSystemService_TransactionTo(t *testing.T) {
 		{
 			name: "happy path",
 			input: dto.SystemTrxInput{
-				UserId:  uuid.NewString(),
-				Amount:  10000,
-				TrxType: 1,
+				IdempotencyKey: uuid.NewString(),
+				UserId:         uuid.NewString(),
+				Amount:         10000,
+				TrxType:        1,
 			},
 			rgstyTrxTypeInfo: &core.TrxType{Category: "system", Enable: true},
 			mockBehavior: func(trxTInfo *core.TrxType) []*mock.Call {
@@ -54,9 +55,10 @@ func TestSystemService_TransactionTo(t *testing.T) {
 		{
 			name: "uncorrect transaction type",
 			input: dto.SystemTrxInput{
-				UserId:  uuid.NewString(),
-				Amount:  10000,
-				TrxType: 0,
+				IdempotencyKey: uuid.NewString(),
+				UserId:         uuid.NewString(),
+				Amount:         10000,
+				TrxType:        0,
 			},
 			rgstyTrxTypeInfo: &core.TrxType{},
 			mockBehavior: func(trxTInfo *core.TrxType) []*mock.Call {
@@ -70,9 +72,10 @@ func TestSystemService_TransactionTo(t *testing.T) {
 		{
 			name: "unexpected error from registry",
 			input: dto.SystemTrxInput{
-				UserId:  uuid.NewString(),
-				Amount:  10000,
-				TrxType: 1,
+				IdempotencyKey: uuid.NewString(),
+				UserId:         uuid.NewString(),
+				Amount:         10000,
+				TrxType:        1,
 			},
 			rgstyTrxTypeInfo: &core.TrxType{},
 			mockBehavior: func(trxTInfo *core.TrxType) []*mock.Call {
@@ -86,9 +89,10 @@ func TestSystemService_TransactionTo(t *testing.T) {
 		{
 			name: "error transaction type is disabled",
 			input: dto.SystemTrxInput{
-				UserId:  uuid.NewString(),
-				Amount:  10000,
-				TrxType: 1,
+				IdempotencyKey: uuid.NewString(),
+				UserId:         uuid.NewString(),
+				Amount:         10000,
+				TrxType:        1,
 			},
 			rgstyTrxTypeInfo: &core.TrxType{Category: "system", Enable: false},
 			mockBehavior: func(trxTInfo *core.TrxType) []*mock.Call {
@@ -102,9 +106,10 @@ func TestSystemService_TransactionTo(t *testing.T) {
 		{
 			name: "error transaction category not 'system'",
 			input: dto.SystemTrxInput{
-				UserId:  uuid.NewString(),
-				Amount:  10000,
-				TrxType: 1,
+				IdempotencyKey: uuid.NewString(),
+				UserId:         uuid.NewString(),
+				Amount:         10000,
+				TrxType:        1,
 			},
 			rgstyTrxTypeInfo: &core.TrxType{Category: "user", Enable: true},
 			mockBehavior: func(trxTInfo *core.TrxType) []*mock.Call {
@@ -118,9 +123,10 @@ func TestSystemService_TransactionTo(t *testing.T) {
 		{
 			name: "error bad user id",
 			input: dto.SystemTrxInput{
-				UserId:  "bad uuid",
-				Amount:  10000,
-				TrxType: 1,
+				IdempotencyKey: uuid.NewString(),
+				UserId:         "bad uuid",
+				Amount:         10000,
+				TrxType:        1,
 			},
 			rgstyTrxTypeInfo: &core.TrxType{Category: "system", Enable: true},
 			mockBehavior: func(trxTInfo *core.TrxType) []*mock.Call {
@@ -134,9 +140,10 @@ func TestSystemService_TransactionTo(t *testing.T) {
 		{
 			name: "error amount equal to 0",
 			input: dto.SystemTrxInput{
-				UserId:  uuid.NewString(),
-				Amount:  0,
-				TrxType: 1,
+				IdempotencyKey: uuid.NewString(),
+				UserId:         uuid.NewString(),
+				Amount:         0,
+				TrxType:        1,
 			},
 			rgstyTrxTypeInfo: &core.TrxType{Category: "system", Enable: true},
 			mockBehavior: func(trxTInfo *core.TrxType) []*mock.Call {
@@ -150,9 +157,10 @@ func TestSystemService_TransactionTo(t *testing.T) {
 		{
 			name: "error when call db method TransactionTo",
 			input: dto.SystemTrxInput{
-				UserId:  uuid.NewString(),
-				Amount:  10000,
-				TrxType: 1,
+				IdempotencyKey: uuid.NewString(),
+				UserId:         uuid.NewString(),
+				Amount:         10000,
+				TrxType:        1,
 			},
 			rgstyTrxTypeInfo: &core.TrxType{Category: "system", Enable: true},
 			mockBehavior: func(trxTInfo *core.TrxType) []*mock.Call {
@@ -163,6 +171,41 @@ func TestSystemService_TransactionTo(t *testing.T) {
 				return []*mock.Call{c1, c2, c3, c4}
 			},
 			wantErr: fmt.Errorf("err"),
+		},
+		{
+			name: "error bad idempotency_key",
+			input: dto.SystemTrxInput{
+				IdempotencyKey: "baad idempotency_key",
+				UserId:         uuid.NewString(),
+				Amount:         10000,
+				TrxType:        1,
+			},
+			rgstyTrxTypeInfo: &core.TrxType{Category: "system", Enable: true},
+			mockBehavior: func(trxTInfo *core.TrxType) []*mock.Call {
+				c1 := l.On("With", "op", op).Return(l)
+				c2 := rg.On("SystemToType", mock.Anything).Return(trxTInfo, nil)
+				c3 := l.On("Error", mock.Anything, mock.Anything, mock.Anything)
+				return []*mock.Call{c1, c2, c3}
+			},
+			wantErr: core.ErrInvalidIdempotencyKey,
+		},
+		{
+			name: "error request in process",
+			input: dto.SystemTrxInput{
+				IdempotencyKey: uuid.NewString(),
+				UserId:         uuid.NewString(),
+				Amount:         10000,
+				TrxType:        1,
+			},
+			rgstyTrxTypeInfo: &core.TrxType{Category: "system", Enable: true},
+			mockBehavior: func(trxTInfo *core.TrxType) []*mock.Call {
+				c1 := l.On("With", "op", op).Return(l)
+				c2 := rg.On("SystemToType", mock.Anything).Return(trxTInfo, nil)
+				c3 := system.On("TransactionTo", mock.Anything, mock.Anything).Return(postgres.ErrIdempotencyKey)
+				c4 := l.On("Error", mock.Anything, mock.Anything, mock.Anything)
+				return []*mock.Call{c1, c2, c3, c4}
+			},
+			wantErr: core.ErrRequestInProcess,
 		},
 	}
 
@@ -203,9 +246,10 @@ func TestSystemService_TransactionFrom(t *testing.T) {
 		{
 			name: "happy path",
 			input: dto.SystemTrxInput{
-				UserId:  uuid.NewString(),
-				Amount:  10000,
-				TrxType: 1,
+				IdempotencyKey: uuid.NewString(),
+				UserId:         uuid.NewString(),
+				Amount:         10000,
+				TrxType:        1,
 			},
 			rgstyTrxTypeInfo: &core.TrxType{Category: "system", Enable: true},
 			mockBehavior: func(trxTInfo *core.TrxType) []*mock.Call {
@@ -219,9 +263,10 @@ func TestSystemService_TransactionFrom(t *testing.T) {
 		{
 			name: "uncorrect transaction type",
 			input: dto.SystemTrxInput{
-				UserId:  uuid.NewString(),
-				Amount:  10000,
-				TrxType: 0,
+				IdempotencyKey: uuid.NewString(),
+				UserId:         uuid.NewString(),
+				Amount:         10000,
+				TrxType:        0,
 			},
 			rgstyTrxTypeInfo: &core.TrxType{},
 			mockBehavior: func(trxTInfo *core.TrxType) []*mock.Call {
@@ -235,9 +280,10 @@ func TestSystemService_TransactionFrom(t *testing.T) {
 		{
 			name: "unexpected error from registry",
 			input: dto.SystemTrxInput{
-				UserId:  uuid.NewString(),
-				Amount:  10000,
-				TrxType: 1,
+				IdempotencyKey: uuid.NewString(),
+				UserId:         uuid.NewString(),
+				Amount:         10000,
+				TrxType:        1,
 			},
 			rgstyTrxTypeInfo: &core.TrxType{},
 			mockBehavior: func(trxTInfo *core.TrxType) []*mock.Call {
@@ -251,9 +297,10 @@ func TestSystemService_TransactionFrom(t *testing.T) {
 		{
 			name: "error transaction type is disabled",
 			input: dto.SystemTrxInput{
-				UserId:  uuid.NewString(),
-				Amount:  10000,
-				TrxType: 1,
+				IdempotencyKey: uuid.NewString(),
+				UserId:         uuid.NewString(),
+				Amount:         10000,
+				TrxType:        1,
 			},
 			rgstyTrxTypeInfo: &core.TrxType{Category: "system", Enable: false},
 			mockBehavior: func(trxTInfo *core.TrxType) []*mock.Call {
@@ -267,9 +314,10 @@ func TestSystemService_TransactionFrom(t *testing.T) {
 		{
 			name: "error transaction category not 'system'",
 			input: dto.SystemTrxInput{
-				UserId:  uuid.NewString(),
-				Amount:  10000,
-				TrxType: 1,
+				IdempotencyKey: uuid.NewString(),
+				UserId:         uuid.NewString(),
+				Amount:         10000,
+				TrxType:        1,
 			},
 			rgstyTrxTypeInfo: &core.TrxType{Category: "user", Enable: true},
 			mockBehavior: func(trxTInfo *core.TrxType) []*mock.Call {
@@ -283,9 +331,10 @@ func TestSystemService_TransactionFrom(t *testing.T) {
 		{
 			name: "error bad user id",
 			input: dto.SystemTrxInput{
-				UserId:  "bad uuid",
-				Amount:  10000,
-				TrxType: 1,
+				IdempotencyKey: uuid.NewString(),
+				UserId:         "bad uuid",
+				Amount:         10000,
+				TrxType:        1,
 			},
 			rgstyTrxTypeInfo: &core.TrxType{Category: "system", Enable: true},
 			mockBehavior: func(trxTInfo *core.TrxType) []*mock.Call {
@@ -299,9 +348,10 @@ func TestSystemService_TransactionFrom(t *testing.T) {
 		{
 			name: "error amount equal to 0",
 			input: dto.SystemTrxInput{
-				UserId:  uuid.NewString(),
-				Amount:  0,
-				TrxType: 1,
+				IdempotencyKey: uuid.NewString(),
+				UserId:         uuid.NewString(),
+				Amount:         0,
+				TrxType:        1,
 			},
 			rgstyTrxTypeInfo: &core.TrxType{Category: "system", Enable: true},
 			mockBehavior: func(trxTInfo *core.TrxType) []*mock.Call {
@@ -315,9 +365,10 @@ func TestSystemService_TransactionFrom(t *testing.T) {
 		{
 			name: "error when call db method TransactionTo",
 			input: dto.SystemTrxInput{
-				UserId:  uuid.NewString(),
-				Amount:  10000,
-				TrxType: 1,
+				IdempotencyKey: uuid.NewString(),
+				UserId:         uuid.NewString(),
+				Amount:         10000,
+				TrxType:        1,
 			},
 			rgstyTrxTypeInfo: &core.TrxType{Category: "system", Enable: true},
 			mockBehavior: func(trxTInfo *core.TrxType) []*mock.Call {
@@ -332,9 +383,10 @@ func TestSystemService_TransactionFrom(t *testing.T) {
 		{
 			name: "error insufficient balance when call db method TransactionFrom",
 			input: dto.SystemTrxInput{
-				UserId:  uuid.NewString(),
-				Amount:  10000,
-				TrxType: 1,
+				IdempotencyKey: uuid.NewString(),
+				UserId:         uuid.NewString(),
+				Amount:         10000,
+				TrxType:        1,
 			},
 			rgstyTrxTypeInfo: &core.TrxType{Category: "system", Enable: true},
 			mockBehavior: func(trxTInfo *core.TrxType) []*mock.Call {
@@ -345,6 +397,41 @@ func TestSystemService_TransactionFrom(t *testing.T) {
 				return []*mock.Call{c1, c2, c3, c4}
 			},
 			wantErr: core.ErrInsuffBalance,
+		},
+		{
+			name: "error bad idempotency_key",
+			input: dto.SystemTrxInput{
+				IdempotencyKey: "bad idempotency key",
+				UserId:         uuid.NewString(),
+				Amount:         10000,
+				TrxType:        1,
+			},
+			rgstyTrxTypeInfo: &core.TrxType{Category: "system", Enable: true},
+			mockBehavior: func(trxTInfo *core.TrxType) []*mock.Call {
+				c1 := l.On("With", "op", op).Return(l)
+				c2 := rg.On("SystemFromType", mock.Anything).Return(trxTInfo, nil)
+				c3 := l.On("Error", mock.Anything, mock.Anything, mock.Anything)
+				return []*mock.Call{c1, c2, c3}
+			},
+			wantErr: core.ErrInvalidIdempotencyKey,
+		},
+		{
+			name: "error request in process",
+			input: dto.SystemTrxInput{
+				IdempotencyKey: uuid.NewString(),
+				UserId:         uuid.NewString(),
+				Amount:         10000,
+				TrxType:        1,
+			},
+			rgstyTrxTypeInfo: &core.TrxType{Category: "system", Enable: true},
+			mockBehavior: func(trxTInfo *core.TrxType) []*mock.Call {
+				c1 := l.On("With", "op", op).Return(l)
+				c2 := rg.On("SystemFromType", mock.Anything).Return(trxTInfo, nil)
+				c3 := system.On("TransactionFrom", mock.Anything, mock.Anything).Return(postgres.ErrIdempotencyKey)
+				c4 := l.On("Error", mock.Anything, mock.Anything, mock.Anything)
+				return []*mock.Call{c1, c2, c3, c4}
+			},
+			wantErr: core.ErrRequestInProcess,
 		},
 	}
 

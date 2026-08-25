@@ -7,14 +7,6 @@ import (
 	"github.com/Cheasezz/balanceSrvc/internal/core"
 )
 
-// type trxRepo struct {
-// 	db *pgx5.Pgx
-// }
-
-// func newTrxRepo(db *pgx5.Pgx) *trxRepo {
-// 	return &trxRepo{db}
-// }
-
 func (r *Postgres) GetAllTypesInfo(ctx context.Context) (map[string]*core.TrxType, error) {
 	const op = "trxrepo.GetAllTypesInfo"
 

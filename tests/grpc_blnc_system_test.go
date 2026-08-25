@@ -26,38 +26,52 @@ func TestGrpcBalance_SystemTransactionTo(t *testing.T) {
 		{
 			name: "happy path",
 			req: &blnc.SystemTrxToRequest{
-				UserId:        uuid.NewString(),
-				SystemTrxType: blnc.SystemTrxToType_SYSTEM_TRX_TO_TYPE_DEPOSIT,
-				Amount:        10000,
+				IdempotencyKey: uuid.NewString(),
+				UserId:         uuid.NewString(),
+				SystemTrxType:  blnc.SystemTrxToType_SYSTEM_TRX_TO_TYPE_DEPOSIT,
+				Amount:         10000,
 			},
 			wantErr: nil,
 		},
 		{
 			name: "error bad userId",
 			req: &blnc.SystemTrxToRequest{
-				UserId:        "bad uuid",
-				SystemTrxType: blnc.SystemTrxToType_SYSTEM_TRX_TO_TYPE_DEPOSIT,
-				Amount:        10000,
+				IdempotencyKey: uuid.NewString(),
+				UserId:         "bad uuid",
+				SystemTrxType:  blnc.SystemTrxToType_SYSTEM_TRX_TO_TYPE_DEPOSIT,
+				Amount:         10000,
 			},
 			wantErr: status.Error(codes.InvalidArgument, core.ErrInvalidUuid.Error()),
 		},
 		{
 			name: "error zero amount",
 			req: &blnc.SystemTrxToRequest{
-				UserId:        uuid.NewString(),
-				SystemTrxType: blnc.SystemTrxToType_SYSTEM_TRX_TO_TYPE_DEPOSIT,
-				Amount:        0,
+				IdempotencyKey: uuid.NewString(),
+				UserId:         uuid.NewString(),
+				SystemTrxType:  blnc.SystemTrxToType_SYSTEM_TRX_TO_TYPE_DEPOSIT,
+				Amount:         0,
 			},
 			wantErr: status.Error(codes.InvalidArgument, core.ErrInvalidAmount.Error()),
 		},
 		{
 			name: "error invalid transaction type",
 			req: &blnc.SystemTrxToRequest{
-				UserId:        uuid.NewString(),
-				SystemTrxType: blnc.SystemTrxToType_SYSTEM_TRX_TO_TYPE_UNKNOWN,
-				Amount:        10000,
+				IdempotencyKey: uuid.NewString(),
+				UserId:         uuid.NewString(),
+				SystemTrxType:  blnc.SystemTrxToType_SYSTEM_TRX_TO_TYPE_UNKNOWN,
+				Amount:         10000,
 			},
 			wantErr: status.Error(codes.InvalidArgument, core.ErrUnknownTrxType.Error()),
+		},
+		{
+			name: "error bad idempotencyKey",
+			req: &blnc.SystemTrxToRequest{
+				IdempotencyKey: "bad idempotency_key",
+				UserId:         uuid.NewString(),
+				SystemTrxType:  blnc.SystemTrxToType_SYSTEM_TRX_TO_TYPE_DEPOSIT,
+				Amount:         10000,
+			},
+			wantErr: status.Error(codes.InvalidArgument, core.ErrInvalidIdempotencyKey.Error()),
 		},
 	}
 

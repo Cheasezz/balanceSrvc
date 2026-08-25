@@ -7,12 +7,13 @@ import (
 )
 
 type Transaction struct {
-	Id           uuid.UUID `db:"id"`
-	Sender_id    uuid.UUID `db:"sender_id"`
-	Resipient_id uuid.UUID `db:"resipient_id"`
-	Type_id      uint8     `db:"type_id"`
-	Amount       uint64    `db:"amount"`
-	Created_at   time.Time `db:"created_at"`
+	Id              uuid.UUID `db:"id"`
+	Idempotency_key uuid.UUID `db:"idempotency_key"`
+	Sender_id       uuid.UUID `db:"sender_id"`
+	Resipient_id    uuid.UUID `db:"resipient_id"`
+	Type_id         uint8     `db:"type_id"`
+	Amount          uint64    `db:"amount"`
+	Created_at      time.Time `db:"created_at"`
 }
 
 type TrxType struct {
@@ -23,29 +24,31 @@ type TrxType struct {
 	Enable   bool   `db:"enable"`
 }
 
-func NewSystemToUserTrx(trxType *TrxType, userId string, amount uint64) (*Transaction, error) {
-	id, err := sysValid(trxType, userId, amount)
+func NewSystemToUserTrx(trxType *TrxType, idempKey, userId string, amount uint64) (*Transaction, error) {
+	id, iKey, err := sysValid(trxType, idempKey, userId, amount)
 	if err != nil {
 		return nil, err
 	}
 
 	return &Transaction{
-		Resipient_id: id,
-		Type_id:      trxType.Id,
-		Amount:       amount,
+		Idempotency_key: iKey,
+		Resipient_id:    id,
+		Type_id:         trxType.Id,
+		Amount:          amount,
 	}, nil
 }
 
-func NewSystemFromUserTrx(trxType *TrxType, userId string, amount uint64) (*Transaction, error) {
-	id, err := sysValid(trxType, userId, amount)
+func NewSystemFromUserTrx(trxType *TrxType, idempKey, userId string, amount uint64) (*Transaction, error) {
+	id, iKey, err := sysValid(trxType, idempKey, userId, amount)
 	if err != nil {
 		return nil, err
 	}
 
 	return &Transaction{
-		Sender_id: id,
-		Type_id:   trxType.Id,
-		Amount:    amount,
+		Idempotency_key: iKey,
+		Sender_id:       id,
+		Type_id:         trxType.Id,
+		Amount:          amount,
 	}, nil
 }
 
@@ -63,25 +66,31 @@ func NewUserToUserTrx(trxType *TrxType, sender, resipient string, amount uint64)
 	}, nil
 }
 
-func sysValid(trxType *TrxType, userId string, amount uint64) (uuid.UUID, error) {
+func sysValid(trxType *TrxType, idempKey, userId string, amount uint64) (uuid.UUID, uuid.UUID, error) {
 	emptyVal := uuid.UUID{}
 	if !trxType.Enable {
-		return emptyVal, ErrDisabledType
+		return emptyVal, emptyVal, ErrDisabledType
 	}
 
 	if trxType.Category != "system" {
-		return emptyVal, ErrInvalidTrxCategory
+		return emptyVal, emptyVal, ErrInvalidTrxCategory
 	}
 
 	id, err := uuid.Parse(userId)
 	if err != nil {
-		return emptyVal, ErrInvalidUuid
+		return emptyVal, emptyVal, ErrInvalidUuid
+	}
+
+	iKey, err := uuid.Parse(idempKey)
+	if err != nil {
+		return emptyVal, emptyVal, ErrInvalidIdempotencyKey
 	}
 
 	if amount <= 0 {
-		return emptyVal, ErrInvalidAmount
+		return emptyVal, emptyVal, ErrInvalidAmount
 	}
-	return id, nil
+
+	return id, iKey, nil
 }
 
 func usrValid(trxType *TrxType, sender, resipient string, amount uint64) (uuid.UUID, uuid.UUID, error) {
