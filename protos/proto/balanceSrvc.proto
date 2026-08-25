@@ -33,12 +33,14 @@ message SystemTrxToRequest {
   string user_id = 1;
   SystemTrxToType system_trx_type = 2;
   uint64 amount = 3;
+  string idempotency_key = 4;
 }
 
 message SystemTrxFromRequest {
   string user_id = 1;
   SystemTrxFromType system_trx_type = 2;
   uint64 amount = 3;
+  string idempotency_key = 4;
 }
 
 message SystemTrxResponse {}
@@ -48,6 +50,7 @@ message UserTrxRequest {
   string resipient_id = 2;
   UserTrxType user_trx_type = 3;
   uint64 amount = 4;
+  string idempotency_key = 5;
 }
 
 message UserTrxResponse {}
