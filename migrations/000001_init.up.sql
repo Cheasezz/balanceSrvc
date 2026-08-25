@@ -20,12 +20,13 @@ INSERT INTO transaction_types (code, name, category) VALUES
 ON CONFLICT (code) DO NOTHING;
 
 CREATE TABLE IF NOT EXISTS transactions (
-  id            UUID            PRIMARY KEY DEFAULT gen_random_uuid(),
-  sender_id     UUID,
-  resipient_id  UUID,
-  type_id       SMALLINT        NOT NULL,
-  amount        BIGINT          NOT NULL,
-  created_at    TIMESTAMP       NOT NULL    DEFAULT now(),
+  id							UUID            PRIMARY KEY DEFAULT gen_random_uuid(),
+	idempotency_key	UUID						UNIQUE			NOT NULL,
+  sender_id				UUID,
+  resipient_id		UUID,
+  type_id					SMALLINT        NOT NULL,
+  amount					BIGINT          NOT NULL,
+  created_at			TIMESTAMP       NOT NULL    DEFAULT now(),
 
   CONSTRAINT sender_fk            FOREIGN KEY (sender_id)      REFERENCES users               ON DELETE SET NULL,
   CONSTRAINT resipient_fk         FOREIGN KEY (resipient_id)   REFERENCES users               ON DELETE SET NULL,
