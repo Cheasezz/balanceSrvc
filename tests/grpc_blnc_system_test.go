@@ -160,7 +160,7 @@ func TestGrpcBalance_ConcurrentSystemToUserSameIdempKeys(t *testing.T) {
 	require.Len(t, errors, tests-1)
 }
 
-func TestGrpcBalance_ConcurrentSystemToUserSameIdempKeys2Users(t *testing.T) {
+func TestGrpcBalance_ConcurrentSystemToUserSameIdempKeyPerUser(t *testing.T) {
 	t.Parallel()
 
 	suit := testsuite.New(t)
@@ -310,7 +310,7 @@ func TestGrpcBalance_ConcurrentUserToSystemSameIdempKeys(t *testing.T) {
 	require.Len(t, errors, tests-1)
 }
 
-func TestGrpcBalance_ConcurrentUserToSystemSameIdempKeys2Users(t *testing.T) {
+func TestGrpcBalance_ConcurrentUserToSystemSameIdempKeyPerUser(t *testing.T) {
 	t.Parallel()
 
 	suit := testsuite.New(t)
